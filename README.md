@@ -17,7 +17,7 @@ Brgy Konek Mobile is a cross-platform mobile application built with Expo, React 
 1. Clone the repository:
 
 ```
-git clone <repository-url>
+git clone https://github.com/itsmenoahpoli/brgy-konek-mobile
 cd brgykonek-mobile
 ```
 
