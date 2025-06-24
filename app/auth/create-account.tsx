@@ -4,7 +4,6 @@ import {
   TextInput,
   Image,
   Pressable,
-  Modal,
   Platform,
   KeyboardAvoidingView,
   ScrollView,
@@ -17,10 +16,10 @@ import type { DocumentPickerAsset } from 'expo-document-picker';
 import { useForm, Controller } from 'react-hook-form';
 import authService from '../../services/auth.service';
 import Toast from 'react-native-toast-message';
-import { useNavigation } from '@react-navigation/native';
 import { useRouter } from 'expo-router';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
+import { Ionicons } from '@expo/vector-icons';
 
 type FormData = {
   name: string;
@@ -34,7 +33,7 @@ type FormData = {
 
 const CreateAccountPage: React.FC = () => {
   const [showDatePicker, setShowDatePicker] = useState(false);
-  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [selectedDate, setSelectedDate] = useState<Date | null>(new Date('1990-01-01'));
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const {
@@ -45,18 +44,16 @@ const CreateAccountPage: React.FC = () => {
     trigger,
   } = useForm<FormData>({
     defaultValues: {
-      name: '',
-      birthdate: '',
-      address: '',
-      email: '',
-      password: '',
-      confirmPassword: '',
+      name: 'John Doe',
+      birthdate: '1990-01-01',
+      address: '123 Main Street, City, Province',
+      email: 'test2@example.com',
+      password: 'password123',
+      confirmPassword: 'password123',
       clearance: null,
     },
     mode: 'onTouched',
   });
-
-  const navigation = useNavigation();
   const router = useRouter();
 
   const closeDatePicker = () => {
@@ -120,6 +117,21 @@ const CreateAccountPage: React.FC = () => {
     });
   };
 
+  const formatFileSize = (bytes: number) => {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+  };
+
+  const getFileIcon = (fileName: string) => {
+    const extension = fileName.split('.').pop()?.toLowerCase();
+    if (extension === 'pdf') return 'document-text';
+    if (['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(extension || '')) return 'image';
+    return 'document';
+  };
+
   return (
     <SplashLayout>
       <KeyboardAvoidingView
@@ -131,16 +143,19 @@ const CreateAccountPage: React.FC = () => {
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled">
           <View className="w-full flex-1 items-center justify-center bg-transparent">
-            <Image
-              source={BRAND_LOGO}
-              className="mb-6 h-32 w-32"
-              style={{ resizeMode: 'contain' }}
-            />
-            <View className="mb-6 flex flex-row justify-center gap-x-2">
-              <Text className="text-4xl font-bold text-blue-800">BRGY</Text>
-              <Text className="text-4xl font-bold text-red-600">KONEK</Text>
+            <View className="mb-6 flex flex-row items-center justify-center gap-x-5 pt-7">
+              <Image
+                source={BRAND_LOGO}
+                className="mb-6 h-24 w-24"
+                style={{ resizeMode: 'contain' }}
+              />
+              <View className="mb-6 flex flex-row justify-center gap-x-2">
+                <Text className="text-4xl font-bold text-blue-800">BRGY</Text>
+                <Text className="text-4xl font-bold text-red-600">KONEK</Text>
+              </View>
             </View>
             <View className="w-[85%] items-center rounded-2xl bg-white p-6 shadow-lg">
+              <Text className="mb-6 text-2xl font-bold text-gray-800">REGISTER ACCOUNT</Text>
               <Controller
                 control={control}
                 name="name"
@@ -177,7 +192,7 @@ const CreateAccountPage: React.FC = () => {
                       onPress={() => setShowDatePicker(true)}>
                       <Text
                         className={`text-base ${selectedDate ? 'text-gray-900' : 'text-gray-500'}`}>
-                        {selectedDate ? formatDateForDisplay(selectedDate) : 'dd / mm / yyyy'}
+                        {selectedDate ? formatDateForDisplay(selectedDate) : 'mm / dd / yyyy'}
                       </Text>
                     </Pressable>
                     {errors.birthdate && (
@@ -303,20 +318,69 @@ const CreateAccountPage: React.FC = () => {
                 name="clearance"
                 render={({ field: { value, onChange } }) => (
                   <>
-                    <Pressable
-                      disabled={isSubmitting}
-                      className={`mb-1 flex-row items-center justify-between self-stretch rounded-lg border ${errors.clearance ? 'border-red-500' : 'border-gray-300'} ${isSubmitting ? 'bg-gray-100' : 'bg-gray-50'} px-3 py-3`}
-                      onPress={() => {
-                        closeDatePicker();
-                        pickClearance(onChange);
-                      }}>
-                      <Text className="text-base text-gray-700">
-                        {value && typeof value === 'object' && 'name' in value
-                          ? value.name
-                          : 'Barangay Clearance (PDF or Image) - Optional'}
-                      </Text>
-                      <Text className="text-base font-medium text-blue-600">Upload</Text>
-                    </Pressable>
+                    <View className="mb-1 self-stretch">
+                      {value && typeof value === 'object' && 'name' in value ? (
+                        <View
+                          className={`rounded-lg border ${errors.clearance ? 'border-red-500' : 'border-green-500'} ${isSubmitting ? 'bg-gray-100' : 'bg-green-50'} p-4`}>
+                          <View className="flex-row items-center justify-between">
+                            <View className="flex-1 flex-row items-center">
+                              <View className="mr-3 rounded-full bg-green-100 p-2">
+                                <Ionicons
+                                  name={getFileIcon(value.name) as any}
+                                  size={20}
+                                  color="#059669"
+                                />
+                              </View>
+                              <View className="flex-1">
+                                <Text
+                                  className="text-sm font-medium text-gray-900"
+                                  numberOfLines={1}>
+                                  {value.name}
+                                </Text>
+                                <Text className="text-xs text-gray-500">
+                                  {value.size ? formatFileSize(value.size) : 'Unknown size'}
+                                </Text>
+                              </View>
+                            </View>
+                            <Pressable
+                              disabled={isSubmitting}
+                              onPress={() => {
+                                onChange(null);
+                                setValue('clearance', null);
+                              }}
+                              className="ml-2 rounded-full bg-red-100 p-1">
+                              <Ionicons name="close" size={16} color="#dc2626" />
+                            </Pressable>
+                          </View>
+                        </View>
+                      ) : (
+                        <Pressable
+                          disabled={isSubmitting}
+                          className={`flex-row items-center justify-center rounded-lg border-2 border-dashed ${errors.clearance ? 'border-red-500 bg-red-50' : 'border-gray-300 bg-gray-50'} ${isSubmitting ? 'opacity-50' : ''} p-6`}
+                          onPress={() => {
+                            closeDatePicker();
+                            pickClearance(onChange);
+                          }}>
+                          <View className="items-center">
+                            <View className="mb-2 rounded-full bg-blue-100 p-3">
+                              <Ionicons name="cloud-upload" size={24} color="#2563eb" />
+                            </View>
+                            <Text className="text-center text-sm font-medium text-gray-700">
+                              Upload Barangay Clearance
+                            </Text>
+                            <Text className="mt-1 text-center text-xs text-gray-500">
+                              PDF or Image files accepted
+                            </Text>
+                            <View className="mt-2 flex-row items-center rounded-full bg-blue-600 px-4 py-2">
+                              <Ionicons name="add" size={16} color="white" />
+                              <Text className="ml-1 text-sm font-medium text-white">
+                                Choose File
+                              </Text>
+                            </View>
+                          </View>
+                        </Pressable>
+                      )}
+                    </View>
                     {errors.clearance && (
                       <Text className="mb-3 self-stretch text-xs text-red-600">
                         {errors.clearance.message as string}
