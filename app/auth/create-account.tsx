@@ -1,10 +1,13 @@
 import { View, Text, TextInput, Image, Pressable } from 'react-native';
-import { useState } from 'react';
 import { BRAND_LOGO } from '@/assets/images';
 import { SplashLayout } from '@/components';
 import * as DocumentPicker from 'expo-document-picker';
 import type { DocumentPickerAsset } from 'expo-document-picker';
 import { useForm, Controller } from 'react-hook-form';
+import authService from '../../services/auth.service';
+import Toast from 'react-native-toast-message';
+import { useNavigation } from '@react-navigation/native';
+import { useRouter } from 'expo-router';
 
 type FormData = {
   name: string;
@@ -36,7 +39,22 @@ const CreateAccountPage: React.FC = () => {
     mode: 'onTouched',
   });
 
-  const onSubmit = (data: any) => {};
+  const navigation = useNavigation();
+  const router = useRouter();
+
+  const onSubmit = (data: any) => {
+    authService
+      .register(data)
+      .then(() => {
+        Toast.show({ type: 'success', text1: 'Registration successful' });
+      })
+      .catch((error: any) => {
+        Toast.show({
+          type: 'error',
+          text1: error?.response?.data?.message || 'Registration failed',
+        });
+      });
+  };
 
   const pickClearance = async (onChange: (file: DocumentPickerAsset | null) => void) => {
     const result = await DocumentPicker.getDocumentAsync({
@@ -54,7 +72,7 @@ const CreateAccountPage: React.FC = () => {
   return (
     <SplashLayout>
       <View className="w-full flex-1 items-center justify-center bg-transparent">
-        <Image source={BRAND_LOGO} className="mb-6 h-48 w-48" style={{ resizeMode: 'contain' }} />
+        <Image source={BRAND_LOGO} className="mb-6 h-32 w-32" style={{ resizeMode: 'contain' }} />
         <View className="mb-6 flex flex-row justify-center gap-x-2">
           <Text className="text-4xl font-bold text-blue-800">BRGY</Text>
           <Text className="text-4xl font-bold text-red-600">KONEK</Text>
@@ -224,6 +242,11 @@ const CreateAccountPage: React.FC = () => {
             className="mt-2 items-center self-stretch rounded-lg bg-[#333] py-3"
             onPress={handleSubmit(onSubmit)}>
             <Text className="text-base font-bold text-white">REGISTER ACCOUNT</Text>
+          </Pressable>
+          <Pressable
+            className="mt-2 items-center self-stretch rounded-lg border border-gray-300 bg-white py-3"
+            onPress={() => router.push('/auth/signin')}>
+            <Text className="text-base font-bold text-blue-700">Back to Sign In</Text>
           </Pressable>
         </View>
       </View>
