@@ -1,8 +1,18 @@
 import { View, Image, Text, ActivityIndicator } from 'react-native';
 import { SplashLayout } from '@/components';
 import { BRAND_LOGO } from '@/assets/images';
+import { useEffect } from 'react';
+import { useRouter } from 'expo-router';
 
 const RootPage: React.FC = () => {
+  const router = useRouter();
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      router.replace('/auth/signin');
+    }, 3000);
+    return () => clearTimeout(timeout);
+  }, [router]);
+
   return (
     <SplashLayout>
       <View className="relative w-full flex-1 items-center justify-center">
