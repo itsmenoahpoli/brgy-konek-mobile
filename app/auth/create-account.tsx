@@ -321,7 +321,7 @@ const CreateAccountPage: React.FC = () => {
               <Pressable
                 className="mt-2 items-center self-stretch rounded-lg border border-gray-300 bg-white py-3"
                 onPress={() => router.push('/auth/signin')}>
-                <Text className="text-base font-bold text-blue-700">Back to Sign In</Text>
+                <Text className="text-base font-bold text-blue-700">BACK TO SIGN-IN</Text>
               </Pressable>
             </View>
           </View>
