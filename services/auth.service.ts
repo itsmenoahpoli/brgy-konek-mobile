@@ -1,13 +1,45 @@
 import api from '../api';
+import { authStorage } from '../utils/storage';
+import Toast from 'react-native-toast-message';
 
 const authService = {
   login: async (email: string, password: string) => {
     try {
       const res = await api.post('/auth/login', { email, password });
       console.log(res);
+
+      if (res.data && res.data.token) {
+        await authStorage.saveAuthData(res.data.token, res.data.user || res.data);
+        Toast.show({
+          type: 'success',
+          text1: 'Login Successful',
+          text2: 'Welcome back!',
+        });
+      }
+
       return res.data;
     } catch (err: any) {
       console.log(err);
+      let errorMessage = 'Login failed. Please try again.';
+
+      if (err?.response?.data?.message) {
+        errorMessage = err.response.data.message;
+      } else if (err?.response?.status === 401) {
+        errorMessage = 'Invalid email or password.';
+      } else if (err?.response?.status === 422) {
+        errorMessage = 'Please check your input data and try again.';
+      } else if (err?.response?.status === 500) {
+        errorMessage = 'Server error. Please try again later.';
+      } else if (err?.code === 'NETWORK_ERROR' || err?.code === 'ECONNABORTED') {
+        errorMessage = 'Network error. Please check your connection.';
+      }
+
+      Toast.show({
+        type: 'error',
+        text1: 'Login Failed',
+        text2: errorMessage,
+      });
+
       throw err;
     }
   },
@@ -38,6 +70,14 @@ const authService = {
       };
 
       throw formattedError;
+    }
+  },
+  logout: async () => {
+    try {
+      await authStorage.clearAuthData();
+    } catch (err: any) {
+      console.log(err);
+      throw err;
     }
   },
 };

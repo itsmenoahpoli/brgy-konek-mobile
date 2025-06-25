@@ -1,10 +1,11 @@
-import { View, Text, TextInput, Image, Pressable, Alert } from 'react-native';
-import { useState } from 'react';
+import { View, Text, TextInput, Image, Pressable } from 'react-native';
+import { useState, useEffect } from 'react';
 import { BRAND_LOGO } from '@/assets/images';
 import { SplashLayout } from '@/components';
 import { useRouter } from 'expo-router';
 import { useForm, Controller } from 'react-hook-form';
 import authService from '../../services/auth.service';
+import { authStorage } from '../../utils/storage';
 
 const userTypes = [
   { label: 'Resident', value: 'resident' },
@@ -27,14 +28,19 @@ const SigninPage: React.FC = () => {
   const [userType, setUserType] = useState('resident');
   const router = useRouter();
 
+  useEffect(() => {
+    const checkUserData = async () => {
+      const userData = await authStorage.getUserData();
+      if (userData) {
+        router.replace('/user/my-pofile');
+      }
+    };
+    checkUserData();
+  }, []);
+
   const onSubmit = async (data: any) => {
-    try {
-      await authService.login(data.email, data.password);
-      Alert.alert('Login successful');
-      // You can navigate to dashboard here
-    } catch (error: any) {
-      Alert.alert('Login failed', error?.response?.data?.message || 'An error occurred');
-    }
+    await authService.login(data.email, data.password);
+    router.push('/user/my-pofile');
   };
 
   return (

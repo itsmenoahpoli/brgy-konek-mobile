@@ -4,7 +4,7 @@
     "slug": "brgy-konek-mobile",
     "version": "1.0.0",
     "scheme": "brgy-konek-mobile",
-    "backgroundColor": "#000000",
+    "backgroundColor": "#fff",
     "web": {
       "bundler": "metro",
       "output": "static",
