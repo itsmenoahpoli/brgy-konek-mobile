@@ -115,8 +115,7 @@ const MyProfile: React.FC = () => {
           <View className="w-full flex-1 items-center bg-transparent pt-6">
             <View className="mb-2 w-[85%] flex-row items-center">
               <Pressable onPress={() => router.push('/')}>
-                {' '}
-                <Text className="text-blue-600">Home</Text>{' '}
+                <Text className="text-blue-600">Home</Text>
               </Pressable>
               <Text className="mx-2 text-gray-400">/</Text>
               <Text className="font-medium text-gray-800">My Profile</Text>
@@ -124,7 +123,7 @@ const MyProfile: React.FC = () => {
             <View className="mb-4 w-[85%] items-start">
               <Text className="text-2xl font-bold text-gray-800">Edit Profile</Text>
             </View>
-            <View className="mb-8 mt-8 w-full items-center">
+            <View className="mb-8 w-full items-center">
               <View className="relative mb-3">
                 <Image
                   source={

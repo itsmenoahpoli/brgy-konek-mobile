@@ -45,7 +45,7 @@ const CreateAccountPage: React.FC = () => {
   const isMediumScreen = width >= 375 && width < 768;
   const isLargeScreen = width >= 768;
 
-  const containerWidth = isLargeScreen ? '70%' : isMediumScreen ? '85%' : '92%';
+  const containerWidth = 'w-[90%]';
   const logoSize = isLargeScreen ? 28 : isMediumScreen ? 24 : 20;
   const brandTextSize = isLargeScreen ? 'text-5xl' : isMediumScreen ? 'text-4xl' : 'text-3xl';
   const titleSize = isLargeScreen ? 'text-3xl' : isMediumScreen ? 'text-2xl' : 'text-xl';
@@ -158,11 +158,14 @@ const CreateAccountPage: React.FC = () => {
           <View className="w-full flex-1 items-center justify-center bg-transparent">
             <View
               className={`mb-${isLargeScreen ? '8' : isMediumScreen ? '6' : '4'} flex flex-row items-center justify-center gap-x-${isLargeScreen ? '6' : isMediumScreen ? '5' : '3'} pt-${isLargeScreen ? '10' : isMediumScreen ? '7' : '5'}`}>
-              <Image
+              {/* <Image
                 source={BRAND_LOGO}
-                className={`h-${logoSize} w-${logoSize}`}
-                style={{ resizeMode: 'contain' }}
-              />
+                style={{
+                  width: `${logoSize}px`,
+                  height: `${logoSize}px`,
+                  resizeMode: 'contain',
+                }}
+              /> */}
               <View
                 className={`flex flex-row justify-center gap-x-${isLargeScreen ? '3' : isMediumScreen ? '2' : '1'}`}>
                 <Text className={`${brandTextSize} font-bold text-blue-800`}>BRGY</Text>
@@ -346,27 +349,18 @@ const CreateAccountPage: React.FC = () => {
                     <View className="mb-1 self-stretch">
                       {value && typeof value === 'object' && 'name' in value ? (
                         <View
-                          className={`rounded-lg border ${errors.clearance ? 'border-red-500' : 'border-green-500'} ${isSubmitting ? 'bg-gray-100' : 'bg-green-50'} ${inputPadding}`}>
+                          className={`rounded-lg border ${errors.clearance ? 'border-red-500' : 'border-gray-200'} ${isSubmitting ? 'bg-gray-100' : 'bg-gray-50'} ${inputPadding}`}>
                           <View className="flex-row items-center justify-between">
                             <View className="flex-1 flex-row items-center">
-                              <View
-                                className={`mr-${isLargeScreen ? '4' : isMediumScreen ? '3' : '2'} rounded-full bg-green-100 p-${isLargeScreen ? '3' : isMediumScreen ? '2' : '1.5'}`}>
-                                <Ionicons
-                                  name={getFileIcon(value.name) as any}
-                                  size={isLargeScreen ? 24 : isMediumScreen ? 20 : 18}
-                                  color="#059669"
-                                />
-                              </View>
-                              <View className="flex-1">
-                                <Text
-                                  className={`${inputTextSize} font-medium text-gray-900`}
-                                  numberOfLines={1}>
-                                  {value.name}
-                                </Text>
-                                <Text className="text-xs text-gray-500">
-                                  {value.size ? formatFileSize(value.size) : 'Unknown size'}
-                                </Text>
-                              </View>
+                              <Ionicons
+                                name={getFileIcon(value.name) as any}
+                                size={isLargeScreen ? 20 : isMediumScreen ? 18 : 16}
+                                color="#6b7280"
+                                className={`mr-${isLargeScreen ? '3' : isMediumScreen ? '2' : '1'}`}
+                              />
+                              <Text className={`${inputTextSize} text-gray-900`} numberOfLines={1}>
+                                {value.name}
+                              </Text>
                             </View>
                             <Pressable
                               disabled={isSubmitting}
@@ -374,11 +368,11 @@ const CreateAccountPage: React.FC = () => {
                                 onChange(null);
                                 setValue('clearance', null);
                               }}
-                              className={`ml-${isLargeScreen ? '3' : isMediumScreen ? '2' : '1'} rounded-full bg-red-100 p-${isLargeScreen ? '2' : isMediumScreen ? '1.5' : '1'}`}>
+                              className={`ml-${isLargeScreen ? '2' : '1'} rounded-full p-1`}>
                               <Ionicons
                                 name="close"
-                                size={isLargeScreen ? 18 : isMediumScreen ? 16 : 14}
-                                color="#dc2626"
+                                size={isLargeScreen ? 16 : isMediumScreen ? 14 : 12}
+                                color="#6b7280"
                               />
                             </Pressable>
                           </View>
@@ -386,41 +380,20 @@ const CreateAccountPage: React.FC = () => {
                       ) : (
                         <Pressable
                           disabled={isSubmitting}
-                          className={`flex-row items-center justify-center rounded-lg border-2 border-dashed ${errors.clearance ? 'border-red-500 bg-red-50' : 'border-gray-300 bg-gray-50'} ${isSubmitting ? 'opacity-50' : ''} p-${isLargeScreen ? '8' : isMediumScreen ? '6' : '4'}`}
+                          className={`flex-row items-center rounded-lg border ${errors.clearance ? 'border-red-500' : 'border-gray-200'} ${isSubmitting ? 'bg-gray-100' : 'bg-gray-50'} ${inputPadding}`}
                           onPress={() => {
                             closeDatePicker();
                             pickClearance(onChange);
                           }}>
-                          <View className="items-center">
-                            <View
-                              className={`mb-${isLargeScreen ? '3' : isMediumScreen ? '2' : '1'} rounded-full bg-blue-100 p-${isLargeScreen ? '4' : isMediumScreen ? '3' : '2'}`}>
-                              <Ionicons
-                                name="cloud-upload"
-                                size={isLargeScreen ? 28 : isMediumScreen ? 24 : 20}
-                                color="#2563eb"
-                              />
-                            </View>
-                            <Text
-                              className={`text-center ${inputTextSize} font-medium text-gray-700`}>
-                              Upload Barangay Clearance
-                            </Text>
-                            <Text
-                              className={`mt-${isLargeScreen ? '2' : '1'} text-center text-xs text-gray-500`}>
-                              PDF or Image files accepted
-                            </Text>
-                            <View
-                              className={`mt-${isLargeScreen ? '3' : isMediumScreen ? '2' : '1'} flex-row items-center rounded-full bg-blue-600 px-${isLargeScreen ? '6' : isMediumScreen ? '4' : '3'} py-${isLargeScreen ? '3' : isMediumScreen ? '2' : '1.5'}`}>
-                              <Ionicons
-                                name="add"
-                                size={isLargeScreen ? 18 : isMediumScreen ? 16 : 14}
-                                color="white"
-                              />
-                              <Text
-                                className={`ml-${isLargeScreen ? '2' : '1'} ${inputTextSize} font-medium text-white`}>
-                                Choose File
-                              </Text>
-                            </View>
-                          </View>
+                          <Ionicons
+                            name="cloud-upload"
+                            size={isLargeScreen ? 20 : isMediumScreen ? 18 : 16}
+                            color="#9ca3af"
+                            className={`mr-${isLargeScreen ? '3' : isMediumScreen ? '2' : '1'}`}
+                          />
+                          <Text className={`${inputTextSize} text-gray-500`}>
+                            Upload Barangay Clearance
+                          </Text>
                         </Pressable>
                       )}
                     </View>
