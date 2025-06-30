@@ -147,11 +147,15 @@ const CreateAccountPage: React.FC = () => {
         className="flex-1"
         keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}>
         <View className="flex-1">
-          <View className="flex-row items-center justify-center py-6">
+          <View className="flex-row items-center justify-between px-6 py-6">
+            <Pressable onPress={() => router.back()} className="rounded-full bg-gray-100 p-2">
+              <Ionicons name="arrow-back" size={24} color="#374151" />
+            </Pressable>
             <View className="flex flex-row justify-center gap-x-2">
               <Text className={`${brandTextSize} font-bold text-blue-800`}>BRGY</Text>
               <Text className={`${brandTextSize} font-bold text-red-600`}>KONEK</Text>
             </View>
+            <View className="w-10" />
           </View>
 
           <Text className={`px-6 pb-6 ${titleSize} text-center font-bold text-gray-800`}>
