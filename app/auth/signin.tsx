@@ -100,7 +100,9 @@ const SigninPage: React.FC = () => {
             )}
           />
           <View className="mb-4 w-full items-end">
-            <Text className="text-base font-medium text-blue-600">Forgot password?</Text>
+            <Pressable onPress={() => router.push('/auth/forgot-password')}>
+              <Text className="text-base font-medium text-blue-600">Forgot password?</Text>
+            </Pressable>
           </View>
           <View className="mb-5 w-full flex-row items-center justify-center">
             {userTypes.map((type) => (

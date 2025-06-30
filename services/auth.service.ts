@@ -80,6 +80,43 @@ const authService = {
       throw err;
     }
   },
+  forgotPassword: async (email: string) => {
+    try {
+      const res = await api.post('/auth/forgot-password', { email });
+      console.log(res);
+
+      Toast.show({
+        type: 'success',
+        text1: 'Reset Email Sent',
+        text2: 'Please check your email for password reset instructions.',
+      });
+
+      return res.data;
+    } catch (err: any) {
+      console.log(err);
+      let errorMessage = 'Failed to send reset email. Please try again.';
+
+      if (err?.response?.data?.message) {
+        errorMessage = err.response.data.message;
+      } else if (err?.response?.status === 404) {
+        errorMessage = 'Email address not found. Please check your email.';
+      } else if (err?.response?.status === 422) {
+        errorMessage = 'Please enter a valid email address.';
+      } else if (err?.response?.status === 500) {
+        errorMessage = 'Server error. Please try again later.';
+      } else if (err?.code === 'NETWORK_ERROR' || err?.code === 'ECONNABORTED') {
+        errorMessage = 'Network error. Please check your connection.';
+      }
+
+      Toast.show({
+        type: 'error',
+        text1: 'Reset Failed',
+        text2: errorMessage,
+      });
+
+      throw err;
+    }
+  },
 };
 
 export default authService;
