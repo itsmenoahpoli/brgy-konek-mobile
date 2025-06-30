@@ -8,6 +8,8 @@ import {
   KeyboardAvoidingView,
   ScrollView,
   ActivityIndicator,
+  Dimensions,
+  useWindowDimensions,
 } from 'react-native';
 import { BRAND_LOGO } from '@/assets/images';
 import { SplashLayout } from '@/components';
@@ -21,6 +23,8 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import { useState } from 'react';
 import { Ionicons } from '@expo/vector-icons';
 
+const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
+
 type FormData = {
   name: string;
   birthdate: string;
@@ -32,9 +36,23 @@ type FormData = {
 };
 
 const CreateAccountPage: React.FC = () => {
+  const { width, height } = useWindowDimensions();
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date | null>(new Date('1990-01-01'));
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const isSmallScreen = width < 375;
+  const isMediumScreen = width >= 375 && width < 768;
+  const isLargeScreen = width >= 768;
+
+  const containerWidth = isLargeScreen ? '70%' : isMediumScreen ? '85%' : '92%';
+  const logoSize = isLargeScreen ? 28 : isMediumScreen ? 24 : 20;
+  const brandTextSize = isLargeScreen ? 'text-5xl' : isMediumScreen ? 'text-4xl' : 'text-3xl';
+  const titleSize = isLargeScreen ? 'text-3xl' : isMediumScreen ? 'text-2xl' : 'text-xl';
+  const inputPadding = isLargeScreen ? 'p-4' : isMediumScreen ? 'p-3' : 'p-2.5';
+  const inputTextSize = isLargeScreen ? 'text-lg' : isMediumScreen ? 'text-base' : 'text-sm';
+  const buttonPadding = isLargeScreen ? 'py-4' : isMediumScreen ? 'py-3' : 'py-2.5';
+  const buttonTextSize = isLargeScreen ? 'text-lg' : isMediumScreen ? 'text-base' : 'text-sm';
 
   const {
     control,
@@ -43,15 +61,7 @@ const CreateAccountPage: React.FC = () => {
     setValue,
     trigger,
   } = useForm<FormData>({
-    defaultValues: {
-      name: 'John Doe',
-      birthdate: '1990-01-01',
-      address: '123 Main Street, City, Province',
-      email: 'test2@example.com',
-      password: 'password123',
-      confirmPassword: 'password123',
-      clearance: null,
-    },
+    defaultValues: {},
     mode: 'onTouched',
   });
   const router = useRouter();
@@ -61,7 +71,6 @@ const CreateAccountPage: React.FC = () => {
   };
 
   const onSubmit = (data: any) => {
-    console.log('onSubmit', data);
     setIsSubmitting(true);
     authService
       .register(data)
@@ -139,23 +148,33 @@ const CreateAccountPage: React.FC = () => {
         className="w-full flex-1"
         keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}>
         <ScrollView
-          contentContainerStyle={{ flexGrow: 1 }}
+          contentContainerStyle={{
+            flexGrow: 1,
+            minHeight: height,
+            paddingVertical: isSmallScreen ? 10 : isMediumScreen ? 20 : 30,
+          }}
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled">
           <View className="w-full flex-1 items-center justify-center bg-transparent">
-            <View className="mb-6 flex flex-row items-center justify-center gap-x-5 pt-7">
+            <View
+              className={`mb-${isLargeScreen ? '8' : isMediumScreen ? '6' : '4'} flex flex-row items-center justify-center gap-x-${isLargeScreen ? '6' : isMediumScreen ? '5' : '3'} pt-${isLargeScreen ? '10' : isMediumScreen ? '7' : '5'}`}>
               <Image
                 source={BRAND_LOGO}
-                className="mb-6 h-24 w-24"
+                className={`h-${logoSize} w-${logoSize}`}
                 style={{ resizeMode: 'contain' }}
               />
-              <View className="mb-6 flex flex-row justify-center gap-x-2">
-                <Text className="text-4xl font-bold text-blue-800">BRGY</Text>
-                <Text className="text-4xl font-bold text-red-600">KONEK</Text>
+              <View
+                className={`flex flex-row justify-center gap-x-${isLargeScreen ? '3' : isMediumScreen ? '2' : '1'}`}>
+                <Text className={`${brandTextSize} font-bold text-blue-800`}>BRGY</Text>
+                <Text className={`${brandTextSize} font-bold text-red-600`}>KONEK</Text>
               </View>
             </View>
-            <View className="w-[85%] items-center rounded-2xl bg-white p-6 shadow-lg">
-              <Text className="mb-6 text-2xl font-bold text-gray-800">REGISTER ACCOUNT</Text>
+            <View
+              className={`${containerWidth} items-center rounded-2xl bg-white p-${isLargeScreen ? '8' : isMediumScreen ? '6' : '4'} shadow-lg`}>
+              <Text
+                className={`mb-${isLargeScreen ? '8' : isMediumScreen ? '6' : '4'} ${titleSize} font-bold text-gray-800`}>
+                REGISTER ACCOUNT
+              </Text>
               <Controller
                 control={control}
                 name="name"
@@ -169,11 +188,12 @@ const CreateAccountPage: React.FC = () => {
                       onFocus={closeDatePicker}
                       placeholder="Full Name"
                       editable={!isSubmitting}
-                      className={`mb-1 self-stretch rounded-lg border ${errors.name ? 'border-red-500' : 'border-gray-200'} ${isSubmitting ? 'bg-gray-100' : 'bg-gray-50'} p-3 text-base`}
+                      className={`mb-1 self-stretch rounded-lg border ${errors.name ? 'border-red-500' : 'border-gray-200'} ${isSubmitting ? 'bg-gray-100' : 'bg-gray-50'} ${inputPadding} ${inputTextSize}`}
                       placeholderTextColor="#9ca3af"
                     />
                     {errors.name && (
-                      <Text className="mb-3 self-stretch text-xs text-red-600">
+                      <Text
+                        className={`mb-${isLargeScreen ? '4' : isMediumScreen ? '3' : '2'} self-stretch text-xs text-red-600`}>
                         {errors.name.message as string}
                       </Text>
                     )}
@@ -188,15 +208,16 @@ const CreateAccountPage: React.FC = () => {
                   <>
                     <Pressable
                       disabled={isSubmitting}
-                      className={`mb-1 self-stretch rounded-lg border ${errors.birthdate ? 'border-red-500' : 'border-gray-200'} ${isSubmitting ? 'bg-gray-100' : 'bg-gray-50'} p-3`}
+                      className={`mb-1 self-stretch rounded-lg border ${errors.birthdate ? 'border-red-500' : 'border-gray-200'} ${isSubmitting ? 'bg-gray-100' : 'bg-gray-50'} ${inputPadding}`}
                       onPress={() => setShowDatePicker(true)}>
                       <Text
-                        className={`text-base ${selectedDate ? 'text-gray-900' : 'text-gray-500'}`}>
+                        className={`${inputTextSize} ${selectedDate ? 'text-gray-900' : 'text-gray-500'}`}>
                         {selectedDate ? formatDateForDisplay(selectedDate) : 'mm / dd / yyyy'}
                       </Text>
                     </Pressable>
                     {errors.birthdate && (
-                      <Text className="mb-3 self-stretch text-xs text-red-600">
+                      <Text
+                        className={`mb-${isLargeScreen ? '4' : isMediumScreen ? '3' : '2'} self-stretch text-xs text-red-600`}>
                         {errors.birthdate.message as string}
                       </Text>
                     )}
@@ -226,11 +247,12 @@ const CreateAccountPage: React.FC = () => {
                       onFocus={closeDatePicker}
                       placeholder="Address"
                       editable={!isSubmitting}
-                      className={`mb-1 self-stretch rounded-lg border ${errors.address ? 'border-red-500' : 'border-gray-200'} ${isSubmitting ? 'bg-gray-100' : 'bg-gray-50'} p-3 text-base`}
+                      className={`mb-1 self-stretch rounded-lg border ${errors.address ? 'border-red-500' : 'border-gray-200'} ${isSubmitting ? 'bg-gray-100' : 'bg-gray-50'} ${inputPadding} ${inputTextSize}`}
                       placeholderTextColor="#9ca3af"
                     />
                     {errors.address && (
-                      <Text className="mb-3 self-stretch text-xs text-red-600">
+                      <Text
+                        className={`mb-${isLargeScreen ? '4' : isMediumScreen ? '3' : '2'} self-stretch text-xs text-red-600`}>
                         {errors.address.message as string}
                       </Text>
                     )}
@@ -252,11 +274,12 @@ const CreateAccountPage: React.FC = () => {
                       keyboardType="email-address"
                       autoCapitalize="none"
                       editable={!isSubmitting}
-                      className={`mb-1 self-stretch rounded-lg border ${errors.email ? 'border-red-500' : 'border-gray-200'} ${isSubmitting ? 'bg-gray-100' : 'bg-gray-50'} p-3 text-base`}
+                      className={`mb-1 self-stretch rounded-lg border ${errors.email ? 'border-red-500' : 'border-gray-200'} ${isSubmitting ? 'bg-gray-100' : 'bg-gray-50'} ${inputPadding} ${inputTextSize}`}
                       placeholderTextColor="#9ca3af"
                     />
                     {errors.email && (
-                      <Text className="mb-3 self-stretch text-xs text-red-600">
+                      <Text
+                        className={`mb-${isLargeScreen ? '4' : isMediumScreen ? '3' : '2'} self-stretch text-xs text-red-600`}>
                         {errors.email.message as string}
                       </Text>
                     )}
@@ -277,11 +300,12 @@ const CreateAccountPage: React.FC = () => {
                       placeholder="Password"
                       secureTextEntry
                       editable={!isSubmitting}
-                      className={`mb-1 self-stretch rounded-lg border ${errors.password ? 'border-red-500' : 'border-gray-200'} ${isSubmitting ? 'bg-gray-100' : 'bg-gray-50'} p-3 text-base`}
+                      className={`mb-1 self-stretch rounded-lg border ${errors.password ? 'border-red-500' : 'border-gray-200'} ${isSubmitting ? 'bg-gray-100' : 'bg-gray-50'} ${inputPadding} ${inputTextSize}`}
                       placeholderTextColor="#9ca3af"
                     />
                     {errors.password && (
-                      <Text className="mb-3 self-stretch text-xs text-red-600">
+                      <Text
+                        className={`mb-${isLargeScreen ? '4' : isMediumScreen ? '3' : '2'} self-stretch text-xs text-red-600`}>
                         {errors.password.message as string}
                       </Text>
                     )}
@@ -302,11 +326,12 @@ const CreateAccountPage: React.FC = () => {
                       placeholder="Confirm Password"
                       secureTextEntry
                       editable={!isSubmitting}
-                      className={`mb-1 self-stretch rounded-lg border ${errors.confirmPassword ? 'border-red-500' : 'border-gray-200'} ${isSubmitting ? 'bg-gray-100' : 'bg-gray-50'} p-3 text-base`}
+                      className={`mb-1 self-stretch rounded-lg border ${errors.confirmPassword ? 'border-red-500' : 'border-gray-200'} ${isSubmitting ? 'bg-gray-100' : 'bg-gray-50'} ${inputPadding} ${inputTextSize}`}
                       placeholderTextColor="#9ca3af"
                     />
                     {errors.confirmPassword && (
-                      <Text className="mb-3 self-stretch text-xs text-red-600">
+                      <Text
+                        className={`mb-${isLargeScreen ? '4' : isMediumScreen ? '3' : '2'} self-stretch text-xs text-red-600`}>
                         {errors.confirmPassword.message as string}
                       </Text>
                     )}
@@ -321,19 +346,20 @@ const CreateAccountPage: React.FC = () => {
                     <View className="mb-1 self-stretch">
                       {value && typeof value === 'object' && 'name' in value ? (
                         <View
-                          className={`rounded-lg border ${errors.clearance ? 'border-red-500' : 'border-green-500'} ${isSubmitting ? 'bg-gray-100' : 'bg-green-50'} p-4`}>
+                          className={`rounded-lg border ${errors.clearance ? 'border-red-500' : 'border-green-500'} ${isSubmitting ? 'bg-gray-100' : 'bg-green-50'} ${inputPadding}`}>
                           <View className="flex-row items-center justify-between">
                             <View className="flex-1 flex-row items-center">
-                              <View className="mr-3 rounded-full bg-green-100 p-2">
+                              <View
+                                className={`mr-${isLargeScreen ? '4' : isMediumScreen ? '3' : '2'} rounded-full bg-green-100 p-${isLargeScreen ? '3' : isMediumScreen ? '2' : '1.5'}`}>
                                 <Ionicons
                                   name={getFileIcon(value.name) as any}
-                                  size={20}
+                                  size={isLargeScreen ? 24 : isMediumScreen ? 20 : 18}
                                   color="#059669"
                                 />
                               </View>
                               <View className="flex-1">
                                 <Text
-                                  className="text-sm font-medium text-gray-900"
+                                  className={`${inputTextSize} font-medium text-gray-900`}
                                   numberOfLines={1}>
                                   {value.name}
                                 </Text>
@@ -348,32 +374,49 @@ const CreateAccountPage: React.FC = () => {
                                 onChange(null);
                                 setValue('clearance', null);
                               }}
-                              className="ml-2 rounded-full bg-red-100 p-1">
-                              <Ionicons name="close" size={16} color="#dc2626" />
+                              className={`ml-${isLargeScreen ? '3' : isMediumScreen ? '2' : '1'} rounded-full bg-red-100 p-${isLargeScreen ? '2' : isMediumScreen ? '1.5' : '1'}`}>
+                              <Ionicons
+                                name="close"
+                                size={isLargeScreen ? 18 : isMediumScreen ? 16 : 14}
+                                color="#dc2626"
+                              />
                             </Pressable>
                           </View>
                         </View>
                       ) : (
                         <Pressable
                           disabled={isSubmitting}
-                          className={`flex-row items-center justify-center rounded-lg border-2 border-dashed ${errors.clearance ? 'border-red-500 bg-red-50' : 'border-gray-300 bg-gray-50'} ${isSubmitting ? 'opacity-50' : ''} p-6`}
+                          className={`flex-row items-center justify-center rounded-lg border-2 border-dashed ${errors.clearance ? 'border-red-500 bg-red-50' : 'border-gray-300 bg-gray-50'} ${isSubmitting ? 'opacity-50' : ''} p-${isLargeScreen ? '8' : isMediumScreen ? '6' : '4'}`}
                           onPress={() => {
                             closeDatePicker();
                             pickClearance(onChange);
                           }}>
                           <View className="items-center">
-                            <View className="mb-2 rounded-full bg-blue-100 p-3">
-                              <Ionicons name="cloud-upload" size={24} color="#2563eb" />
+                            <View
+                              className={`mb-${isLargeScreen ? '3' : isMediumScreen ? '2' : '1'} rounded-full bg-blue-100 p-${isLargeScreen ? '4' : isMediumScreen ? '3' : '2'}`}>
+                              <Ionicons
+                                name="cloud-upload"
+                                size={isLargeScreen ? 28 : isMediumScreen ? 24 : 20}
+                                color="#2563eb"
+                              />
                             </View>
-                            <Text className="text-center text-sm font-medium text-gray-700">
+                            <Text
+                              className={`text-center ${inputTextSize} font-medium text-gray-700`}>
                               Upload Barangay Clearance
                             </Text>
-                            <Text className="mt-1 text-center text-xs text-gray-500">
+                            <Text
+                              className={`mt-${isLargeScreen ? '2' : '1'} text-center text-xs text-gray-500`}>
                               PDF or Image files accepted
                             </Text>
-                            <View className="mt-2 flex-row items-center rounded-full bg-blue-600 px-4 py-2">
-                              <Ionicons name="add" size={16} color="white" />
-                              <Text className="ml-1 text-sm font-medium text-white">
+                            <View
+                              className={`mt-${isLargeScreen ? '3' : isMediumScreen ? '2' : '1'} flex-row items-center rounded-full bg-blue-600 px-${isLargeScreen ? '6' : isMediumScreen ? '4' : '3'} py-${isLargeScreen ? '3' : isMediumScreen ? '2' : '1.5'}`}>
+                              <Ionicons
+                                name="add"
+                                size={isLargeScreen ? 18 : isMediumScreen ? 16 : 14}
+                                color="white"
+                              />
+                              <Text
+                                className={`ml-${isLargeScreen ? '2' : '1'} ${inputTextSize} font-medium text-white`}>
                                 Choose File
                               </Text>
                             </View>
@@ -382,7 +425,8 @@ const CreateAccountPage: React.FC = () => {
                       )}
                     </View>
                     {errors.clearance && (
-                      <Text className="mb-3 self-stretch text-xs text-red-600">
+                      <Text
+                        className={`mb-${isLargeScreen ? '4' : isMediumScreen ? '3' : '2'} self-stretch text-xs text-red-600`}>
                         {errors.clearance.message as string}
                       </Text>
                     )}
@@ -391,23 +435,27 @@ const CreateAccountPage: React.FC = () => {
               />
               <Pressable
                 disabled={isSubmitting}
-                className={`mt-2 items-center self-stretch rounded-lg py-3 ${isSubmitting ? 'bg-gray-400' : 'bg-[#333]'}`}
+                className={`mt-${isLargeScreen ? '4' : isMediumScreen ? '3' : '2'} items-center self-stretch rounded-lg ${buttonPadding} ${isSubmitting ? 'bg-gray-400' : 'bg-[#333]'}`}
                 onPress={handleSubmit(onSubmit)}>
                 {isSubmitting ? (
                   <View className="flex-row items-center">
-                    <ActivityIndicator size="small" color="white" className="mr-2" />
-                    <Text className="text-base font-bold text-white">REGISTERING...</Text>
+                    <ActivityIndicator
+                      size="small"
+                      color="white"
+                      className={`mr-${isLargeScreen ? '3' : isMediumScreen ? '2' : '1'}`}
+                    />
+                    <Text className={`${buttonTextSize} font-bold text-white`}>REGISTERING...</Text>
                   </View>
                 ) : (
-                  <Text className="text-base font-bold text-white">REGISTER ACCOUNT</Text>
+                  <Text className={`${buttonTextSize} font-bold text-white`}>REGISTER ACCOUNT</Text>
                 )}
               </Pressable>
               <Pressable
                 disabled={isSubmitting}
-                className={`mt-2 items-center self-stretch rounded-lg border border-gray-300 py-3 ${isSubmitting ? 'bg-gray-100' : 'bg-white'}`}
+                className={`mt-${isLargeScreen ? '4' : isMediumScreen ? '3' : '2'} items-center self-stretch rounded-lg border border-gray-300 ${buttonPadding} ${isSubmitting ? 'bg-gray-100' : 'bg-white'}`}
                 onPress={() => router.push('/auth/signin')}>
                 <Text
-                  className={`text-base font-bold ${isSubmitting ? 'text-gray-400' : 'text-blue-700'}`}>
+                  className={`${buttonTextSize} font-bold ${isSubmitting ? 'text-gray-400' : 'text-blue-700'}`}>
                   BACK TO SIGN-IN
                 </Text>
               </Pressable>
