@@ -10,9 +10,9 @@ import {
   ActivityIndicator,
   Dimensions,
   useWindowDimensions,
+  SafeAreaView,
 } from 'react-native';
 import { BRAND_LOGO } from '@/assets/images';
-import { SplashLayout } from '@/components';
 import * as DocumentPicker from 'expo-document-picker';
 import type { DocumentPickerAsset } from 'expo-document-picker';
 import { useForm, Controller } from 'react-hook-form';
@@ -45,7 +45,6 @@ const CreateAccountPage: React.FC = () => {
   const isMediumScreen = width >= 375 && width < 768;
   const isLargeScreen = width >= 768;
 
-  const containerWidth = 'w-[90%]';
   const logoSize = isLargeScreen ? 28 : isMediumScreen ? 24 : 20;
   const brandTextSize = isLargeScreen ? 'text-5xl' : isMediumScreen ? 'text-4xl' : 'text-3xl';
   const titleSize = isLargeScreen ? 'text-3xl' : isMediumScreen ? 'text-2xl' : 'text-xl';
@@ -142,301 +141,290 @@ const CreateAccountPage: React.FC = () => {
   };
 
   return (
-    <SplashLayout>
+    <SafeAreaView className="flex-1 bg-white">
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        className="w-full flex-1"
+        className="flex-1"
         keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}>
-        <ScrollView
-          contentContainerStyle={{
-            flexGrow: 1,
-            minHeight: height,
-            paddingVertical: isSmallScreen ? 10 : isMediumScreen ? 20 : 30,
-          }}
-          showsVerticalScrollIndicator={false}
-          keyboardShouldPersistTaps="handled">
-          <View className="w-full flex-1 items-center justify-center bg-transparent">
-            <View
-              className={`mb-${isLargeScreen ? '8' : isMediumScreen ? '6' : '4'} flex flex-row items-center justify-center gap-x-${isLargeScreen ? '6' : isMediumScreen ? '5' : '3'} pt-${isLargeScreen ? '10' : isMediumScreen ? '7' : '5'}`}>
-              {/* <Image
-                source={BRAND_LOGO}
-                style={{
-                  width: `${logoSize}px`,
-                  height: `${logoSize}px`,
-                  resizeMode: 'contain',
-                }}
-              /> */}
-              <View
-                className={`flex flex-row justify-center gap-x-${isLargeScreen ? '3' : isMediumScreen ? '2' : '1'}`}>
-                <Text className={`${brandTextSize} font-bold text-blue-800`}>BRGY</Text>
-                <Text className={`${brandTextSize} font-bold text-red-600`}>KONEK</Text>
-              </View>
-            </View>
-            <View
-              className={`${containerWidth} items-center rounded-2xl bg-white p-${isLargeScreen ? '8' : isMediumScreen ? '6' : '4'} shadow-lg`}>
-              <Text
-                className={`mb-${isLargeScreen ? '8' : isMediumScreen ? '6' : '4'} ${titleSize} font-bold text-gray-800`}>
-                REGISTER ACCOUNT
-              </Text>
-              <Controller
-                control={control}
-                name="name"
-                rules={{ required: 'Full Name is required' }}
-                render={({ field: { onChange, onBlur, value } }) => (
-                  <>
-                    <TextInput
-                      value={value}
-                      onChangeText={onChange}
-                      onBlur={onBlur}
-                      onFocus={closeDatePicker}
-                      placeholder="Full Name"
-                      editable={!isSubmitting}
-                      className={`mb-1 self-stretch rounded-lg border ${errors.name ? 'border-red-500' : 'border-gray-200'} ${isSubmitting ? 'bg-gray-100' : 'bg-gray-50'} ${inputPadding} ${inputTextSize}`}
-                      placeholderTextColor="#9ca3af"
-                    />
-                    {errors.name && (
-                      <Text
-                        className={`mb-${isLargeScreen ? '4' : isMediumScreen ? '3' : '2'} self-stretch text-xs text-red-600`}>
-                        {errors.name.message as string}
-                      </Text>
-                    )}
-                  </>
-                )}
-              />
-              <Controller
-                control={control}
-                name="birthdate"
-                rules={{ required: 'Birthdate is required' }}
-                render={({ field: { value, onChange } }) => (
-                  <>
-                    <Pressable
-                      disabled={isSubmitting}
-                      className={`mb-1 self-stretch rounded-lg border ${errors.birthdate ? 'border-red-500' : 'border-gray-200'} ${isSubmitting ? 'bg-gray-100' : 'bg-gray-50'} ${inputPadding}`}
-                      onPress={() => setShowDatePicker(true)}>
-                      <Text
-                        className={`${inputTextSize} ${selectedDate ? 'text-gray-900' : 'text-gray-500'}`}>
-                        {selectedDate ? formatDateForDisplay(selectedDate) : 'mm / dd / yyyy'}
-                      </Text>
-                    </Pressable>
-                    {errors.birthdate && (
-                      <Text
-                        className={`mb-${isLargeScreen ? '4' : isMediumScreen ? '3' : '2'} self-stretch text-xs text-red-600`}>
-                        {errors.birthdate.message as string}
-                      </Text>
-                    )}
-                    {showDatePicker && (
-                      <DateTimePicker
-                        value={selectedDate || new Date()}
-                        mode="date"
-                        display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-                        onChange={handleDateChange}
-                        maximumDate={new Date()}
-                        minimumDate={new Date(1900, 0, 1)}
-                      />
-                    )}
-                  </>
-                )}
-              />
-              <Controller
-                control={control}
-                name="address"
-                rules={{ required: 'Address is required' }}
-                render={({ field: { onChange, onBlur, value } }) => (
-                  <>
-                    <TextInput
-                      value={value}
-                      onChangeText={onChange}
-                      onBlur={onBlur}
-                      onFocus={closeDatePicker}
-                      placeholder="Address"
-                      editable={!isSubmitting}
-                      className={`mb-1 self-stretch rounded-lg border ${errors.address ? 'border-red-500' : 'border-gray-200'} ${isSubmitting ? 'bg-gray-100' : 'bg-gray-50'} ${inputPadding} ${inputTextSize}`}
-                      placeholderTextColor="#9ca3af"
-                    />
-                    {errors.address && (
-                      <Text
-                        className={`mb-${isLargeScreen ? '4' : isMediumScreen ? '3' : '2'} self-stretch text-xs text-red-600`}>
-                        {errors.address.message as string}
-                      </Text>
-                    )}
-                  </>
-                )}
-              />
-              <Controller
-                control={control}
-                name="email"
-                rules={{ required: 'Email Address is required' }}
-                render={({ field: { onChange, onBlur, value } }) => (
-                  <>
-                    <TextInput
-                      value={value}
-                      onChangeText={onChange}
-                      onBlur={onBlur}
-                      onFocus={closeDatePicker}
-                      placeholder="Email Address"
-                      keyboardType="email-address"
-                      autoCapitalize="none"
-                      editable={!isSubmitting}
-                      className={`mb-1 self-stretch rounded-lg border ${errors.email ? 'border-red-500' : 'border-gray-200'} ${isSubmitting ? 'bg-gray-100' : 'bg-gray-50'} ${inputPadding} ${inputTextSize}`}
-                      placeholderTextColor="#9ca3af"
-                    />
-                    {errors.email && (
-                      <Text
-                        className={`mb-${isLargeScreen ? '4' : isMediumScreen ? '3' : '2'} self-stretch text-xs text-red-600`}>
-                        {errors.email.message as string}
-                      </Text>
-                    )}
-                  </>
-                )}
-              />
-              <Controller
-                control={control}
-                name="password"
-                rules={{ required: 'Password is required' }}
-                render={({ field: { onChange, onBlur, value } }) => (
-                  <>
-                    <TextInput
-                      value={value}
-                      onChangeText={onChange}
-                      onBlur={onBlur}
-                      onFocus={closeDatePicker}
-                      placeholder="Password"
-                      secureTextEntry
-                      editable={!isSubmitting}
-                      className={`mb-1 self-stretch rounded-lg border ${errors.password ? 'border-red-500' : 'border-gray-200'} ${isSubmitting ? 'bg-gray-100' : 'bg-gray-50'} ${inputPadding} ${inputTextSize}`}
-                      placeholderTextColor="#9ca3af"
-                    />
-                    {errors.password && (
-                      <Text
-                        className={`mb-${isLargeScreen ? '4' : isMediumScreen ? '3' : '2'} self-stretch text-xs text-red-600`}>
-                        {errors.password.message as string}
-                      </Text>
-                    )}
-                  </>
-                )}
-              />
-              <Controller
-                control={control}
-                name="confirmPassword"
-                rules={{ required: 'Confirm Password is required' }}
-                render={({ field: { onChange, onBlur, value } }) => (
-                  <>
-                    <TextInput
-                      value={value}
-                      onChangeText={onChange}
-                      onBlur={onBlur}
-                      onFocus={closeDatePicker}
-                      placeholder="Confirm Password"
-                      secureTextEntry
-                      editable={!isSubmitting}
-                      className={`mb-1 self-stretch rounded-lg border ${errors.confirmPassword ? 'border-red-500' : 'border-gray-200'} ${isSubmitting ? 'bg-gray-100' : 'bg-gray-50'} ${inputPadding} ${inputTextSize}`}
-                      placeholderTextColor="#9ca3af"
-                    />
-                    {errors.confirmPassword && (
-                      <Text
-                        className={`mb-${isLargeScreen ? '4' : isMediumScreen ? '3' : '2'} self-stretch text-xs text-red-600`}>
-                        {errors.confirmPassword.message as string}
-                      </Text>
-                    )}
-                  </>
-                )}
-              />
-              <Controller
-                control={control}
-                name="clearance"
-                render={({ field: { value, onChange } }) => (
-                  <>
-                    <View className="mb-1 self-stretch">
-                      {value && typeof value === 'object' && 'name' in value ? (
-                        <View
-                          className={`rounded-lg border ${errors.clearance ? 'border-red-500' : 'border-gray-200'} ${isSubmitting ? 'bg-gray-100' : 'bg-gray-50'} ${inputPadding}`}>
-                          <View className="flex-row items-center justify-between">
-                            <View className="flex-1 flex-row items-center">
-                              <Ionicons
-                                name={getFileIcon(value.name) as any}
-                                size={isLargeScreen ? 20 : isMediumScreen ? 18 : 16}
-                                color="#6b7280"
-                                className={`mr-${isLargeScreen ? '3' : isMediumScreen ? '2' : '1'}`}
-                              />
-                              <Text className={`${inputTextSize} text-gray-900`} numberOfLines={1}>
-                                {value.name}
-                              </Text>
-                            </View>
-                            <Pressable
-                              disabled={isSubmitting}
-                              onPress={() => {
-                                onChange(null);
-                                setValue('clearance', null);
-                              }}
-                              className={`ml-${isLargeScreen ? '2' : '1'} rounded-full p-1`}>
-                              <Ionicons
-                                name="close"
-                                size={isLargeScreen ? 16 : isMediumScreen ? 14 : 12}
-                                color="#6b7280"
-                              />
-                            </Pressable>
-                          </View>
-                        </View>
-                      ) : (
-                        <Pressable
-                          disabled={isSubmitting}
-                          className={`flex-row items-center rounded-lg border ${errors.clearance ? 'border-red-500' : 'border-gray-200'} ${isSubmitting ? 'bg-gray-100' : 'bg-gray-50'} ${inputPadding}`}
-                          onPress={() => {
-                            closeDatePicker();
-                            pickClearance(onChange);
-                          }}>
-                          <Ionicons
-                            name="cloud-upload"
-                            size={isLargeScreen ? 20 : isMediumScreen ? 18 : 16}
-                            color="#9ca3af"
-                            className={`mr-${isLargeScreen ? '3' : isMediumScreen ? '2' : '1'}`}
-                          />
-                          <Text className={`${inputTextSize} text-gray-500`}>
-                            Upload Barangay Clearance
-                          </Text>
-                        </Pressable>
-                      )}
-                    </View>
-                    {errors.clearance && (
-                      <Text
-                        className={`mb-${isLargeScreen ? '4' : isMediumScreen ? '3' : '2'} self-stretch text-xs text-red-600`}>
-                        {errors.clearance.message as string}
-                      </Text>
-                    )}
-                  </>
-                )}
-              />
-              <Pressable
-                disabled={isSubmitting}
-                className={`mt-${isLargeScreen ? '4' : isMediumScreen ? '3' : '2'} items-center self-stretch rounded-lg ${buttonPadding} ${isSubmitting ? 'bg-gray-400' : 'bg-[#333]'}`}
-                onPress={handleSubmit(onSubmit)}>
-                {isSubmitting ? (
-                  <View className="flex-row items-center">
-                    <ActivityIndicator
-                      size="small"
-                      color="white"
-                      className={`mr-${isLargeScreen ? '3' : isMediumScreen ? '2' : '1'}`}
-                    />
-                    <Text className={`${buttonTextSize} font-bold text-white`}>REGISTERING...</Text>
-                  </View>
-                ) : (
-                  <Text className={`${buttonTextSize} font-bold text-white`}>REGISTER ACCOUNT</Text>
-                )}
-              </Pressable>
-              <Pressable
-                disabled={isSubmitting}
-                className={`mt-${isLargeScreen ? '4' : isMediumScreen ? '3' : '2'} items-center self-stretch rounded-lg border border-gray-300 ${buttonPadding} ${isSubmitting ? 'bg-gray-100' : 'bg-white'}`}
-                onPress={() => router.push('/auth/signin')}>
-                <Text
-                  className={`${buttonTextSize} font-bold ${isSubmitting ? 'text-gray-400' : 'text-blue-700'}`}>
-                  BACK TO SIGN-IN
-                </Text>
-              </Pressable>
+        <View className="flex-1">
+          <View className="flex-row items-center justify-center py-6">
+            <View className="flex flex-row justify-center gap-x-2">
+              <Text className={`${brandTextSize} font-bold text-blue-800`}>BRGY</Text>
+              <Text className={`${brandTextSize} font-bold text-red-600`}>KONEK</Text>
             </View>
           </View>
-        </ScrollView>
+
+          <Text className={`px-6 pb-6 ${titleSize} text-center font-bold text-gray-800`}>
+            REGISTER ACCOUNT
+          </Text>
+
+          <ScrollView
+            className="flex-1 px-6"
+            showsVerticalScrollIndicator={false}
+            keyboardShouldPersistTaps="handled">
+            <Controller
+              control={control}
+              name="name"
+              rules={{ required: 'Full Name is required' }}
+              render={({ field: { onChange, onBlur, value } }) => (
+                <>
+                  <TextInput
+                    value={value}
+                    onChangeText={onChange}
+                    onBlur={onBlur}
+                    onFocus={closeDatePicker}
+                    placeholder="Full Name"
+                    editable={!isSubmitting}
+                    className={`mb-1 rounded-lg border ${errors.name ? 'border-red-500' : 'border-gray-200'} ${isSubmitting ? 'bg-gray-100' : 'bg-gray-50'} ${inputPadding} ${inputTextSize}`}
+                    placeholderTextColor="#9ca3af"
+                  />
+                  {errors.name && (
+                    <Text className="mb-4 text-xs text-red-600">
+                      {errors.name.message as string}
+                    </Text>
+                  )}
+                </>
+              )}
+            />
+            <Controller
+              control={control}
+              name="birthdate"
+              rules={{ required: 'Birthdate is required' }}
+              render={({ field: { value, onChange } }) => (
+                <>
+                  <Pressable
+                    disabled={isSubmitting}
+                    className={`mb-1 rounded-lg border ${errors.birthdate ? 'border-red-500' : 'border-gray-200'} ${isSubmitting ? 'bg-gray-100' : 'bg-gray-50'} ${inputPadding}`}
+                    onPress={() => setShowDatePicker(true)}>
+                    <Text
+                      className={`${inputTextSize} ${selectedDate ? 'text-gray-900' : 'text-gray-500'}`}>
+                      {selectedDate ? formatDateForDisplay(selectedDate) : 'mm / dd / yyyy'}
+                    </Text>
+                  </Pressable>
+                  {errors.birthdate && (
+                    <Text className="mb-4 text-xs text-red-600">
+                      {errors.birthdate.message as string}
+                    </Text>
+                  )}
+                  {showDatePicker && (
+                    <DateTimePicker
+                      value={selectedDate || new Date()}
+                      mode="date"
+                      display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+                      onChange={handleDateChange}
+                      maximumDate={new Date()}
+                      minimumDate={new Date(1900, 0, 1)}
+                    />
+                  )}
+                </>
+              )}
+            />
+            <Controller
+              control={control}
+              name="address"
+              rules={{ required: 'Address is required' }}
+              render={({ field: { onChange, onBlur, value } }) => (
+                <>
+                  <TextInput
+                    value={value}
+                    onChangeText={onChange}
+                    onBlur={onBlur}
+                    onFocus={closeDatePicker}
+                    placeholder="Address"
+                    editable={!isSubmitting}
+                    className={`mb-1 rounded-lg border ${errors.address ? 'border-red-500' : 'border-gray-200'} ${isSubmitting ? 'bg-gray-100' : 'bg-gray-50'} ${inputPadding} ${inputTextSize}`}
+                    placeholderTextColor="#9ca3af"
+                  />
+                  {errors.address && (
+                    <Text className="mb-4 text-xs text-red-600">
+                      {errors.address.message as string}
+                    </Text>
+                  )}
+                </>
+              )}
+            />
+            <Controller
+              control={control}
+              name="email"
+              rules={{ required: 'Email Address is required' }}
+              render={({ field: { onChange, onBlur, value } }) => (
+                <>
+                  <TextInput
+                    value={value}
+                    onChangeText={onChange}
+                    onBlur={onBlur}
+                    onFocus={closeDatePicker}
+                    placeholder="Email Address"
+                    keyboardType="email-address"
+                    autoCapitalize="none"
+                    editable={!isSubmitting}
+                    className={`mb-1 rounded-lg border ${errors.email ? 'border-red-500' : 'border-gray-200'} ${isSubmitting ? 'bg-gray-100' : 'bg-gray-50'} ${inputPadding} ${inputTextSize}`}
+                    placeholderTextColor="#9ca3af"
+                  />
+                  {errors.email && (
+                    <Text className="mb-4 text-xs text-red-600">
+                      {errors.email.message as string}
+                    </Text>
+                  )}
+                </>
+              )}
+            />
+            <Controller
+              control={control}
+              name="password"
+              rules={{ required: 'Password is required' }}
+              render={({ field: { onChange, onBlur, value } }) => (
+                <>
+                  <TextInput
+                    value={value}
+                    onChangeText={onChange}
+                    onBlur={onBlur}
+                    onFocus={closeDatePicker}
+                    placeholder="Password"
+                    secureTextEntry
+                    editable={!isSubmitting}
+                    className={`mb-1 rounded-lg border ${errors.password ? 'border-red-500' : 'border-gray-200'} ${isSubmitting ? 'bg-gray-100' : 'bg-gray-50'} ${inputPadding} ${inputTextSize}`}
+                    placeholderTextColor="#9ca3af"
+                  />
+                  {errors.password && (
+                    <Text className="mb-4 text-xs text-red-600">
+                      {errors.password.message as string}
+                    </Text>
+                  )}
+                </>
+              )}
+            />
+            <Controller
+              control={control}
+              name="confirmPassword"
+              rules={{ required: 'Confirm Password is required' }}
+              render={({ field: { onChange, onBlur, value } }) => (
+                <>
+                  <TextInput
+                    value={value}
+                    onChangeText={onChange}
+                    onBlur={onBlur}
+                    onFocus={closeDatePicker}
+                    placeholder="Confirm Password"
+                    secureTextEntry
+                    editable={!isSubmitting}
+                    className={`mb-1 rounded-lg border ${errors.confirmPassword ? 'border-red-500' : 'border-gray-200'} ${isSubmitting ? 'bg-gray-100' : 'bg-gray-50'} ${inputPadding} ${inputTextSize}`}
+                    placeholderTextColor="#9ca3af"
+                  />
+                  {errors.confirmPassword && (
+                    <Text className="mb-4 text-xs text-red-600">
+                      {errors.confirmPassword.message as string}
+                    </Text>
+                  )}
+                </>
+              )}
+            />
+            <Controller
+              control={control}
+              name="clearance"
+              render={({ field: { value, onChange } }) => (
+                <>
+                  <View className="mb-1">
+                    {value && typeof value === 'object' && 'name' in value ? (
+                      <View
+                        className={`rounded-lg border ${errors.clearance ? 'border-red-500' : 'border-gray-200'} ${isSubmitting ? 'bg-gray-100' : 'bg-gray-50'} ${inputPadding}`}>
+                        <View className="flex-row items-center justify-between">
+                          <View className="flex-1 flex-row items-center">
+                            <Ionicons
+                              name={getFileIcon(value.name) as any}
+                              size={isLargeScreen ? 20 : isMediumScreen ? 18 : 16}
+                              color="#6b7280"
+                              className="mr-2"
+                            />
+                            <Text className={`${inputTextSize} text-gray-900`} numberOfLines={1}>
+                              {value.name}
+                            </Text>
+                          </View>
+                          <Pressable
+                            disabled={isSubmitting}
+                            onPress={() => {
+                              onChange(null);
+                              setValue('clearance', null);
+                            }}
+                            className="ml-2 rounded-full p-1">
+                            <Ionicons
+                              name="close"
+                              size={isLargeScreen ? 16 : isMediumScreen ? 14 : 12}
+                              color="#6b7280"
+                            />
+                          </Pressable>
+                        </View>
+                      </View>
+                    ) : (
+                      <View
+                        className={`rounded-lg border-2 border-dashed ${errors.clearance ? 'border-red-500' : 'border-gray-300'} ${isSubmitting ? 'bg-gray-100' : 'bg-gray-50'} ${inputPadding}`}>
+                        <View className="items-center py-4">
+                          <Ionicons
+                            name="cloud-upload"
+                            size={isLargeScreen ? 32 : isMediumScreen ? 28 : 24}
+                            color="#9ca3af"
+                            className="mb-3"
+                          />
+                          <Text
+                            className={`${inputTextSize} mb-2 text-center font-medium text-gray-700`}>
+                            Barangay Clearance
+                          </Text>
+                          <Text className="mb-4 text-center text-xs text-gray-500">
+                            Upload your barangay clearance document
+                          </Text>
+                          <Pressable
+                            disabled={isSubmitting}
+                            className="rounded-lg bg-blue-600 px-6 py-3"
+                            onPress={() => {
+                              closeDatePicker();
+                              pickClearance(onChange);
+                            }}>
+                            <Text className={`${buttonTextSize} font-semibold text-white`}>
+                              Choose File
+                            </Text>
+                          </Pressable>
+                        </View>
+                      </View>
+                    )}
+                  </View>
+                  {errors.clearance && (
+                    <Text className="mb-4 text-xs text-red-600">
+                      {errors.clearance.message as string}
+                    </Text>
+                  )}
+                </>
+              )}
+            />
+            <View className="h-20" />
+          </ScrollView>
+
+          <View className="bg-white px-6 pb-6 pt-4">
+            <Pressable
+              disabled={isSubmitting}
+              className={`items-center rounded-lg ${buttonPadding} ${isSubmitting ? 'bg-gray-400' : 'bg-[#333]'}`}
+              onPress={handleSubmit(onSubmit)}>
+              {isSubmitting ? (
+                <View className="flex-row items-center">
+                  <ActivityIndicator size="small" color="white" className="mr-2" />
+                  <Text className={`${buttonTextSize} font-bold text-white`}>REGISTERING...</Text>
+                </View>
+              ) : (
+                <Text className={`${buttonTextSize} font-bold text-white`}>REGISTER ACCOUNT</Text>
+              )}
+            </Pressable>
+            <Pressable
+              disabled={isSubmitting}
+              className={`mt-3 items-center rounded-lg border border-gray-300 ${buttonPadding} ${isSubmitting ? 'bg-gray-100' : 'bg-white'}`}
+              onPress={() => router.push('/auth/signin')}>
+              <Text
+                className={`${buttonTextSize} font-bold ${isSubmitting ? 'text-gray-400' : 'text-blue-700'}`}>
+                BACK TO SIGN-IN
+              </Text>
+            </Pressable>
+          </View>
+        </View>
       </KeyboardAvoidingView>
-    </SplashLayout>
+    </SafeAreaView>
   );
 };
 
