@@ -8,12 +8,6 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import authService from '../../services/auth.service';
 import { authStorage } from '../../utils/storage';
 
-const userTypes = [
-  { label: 'Resident', value: 'resident' },
-  { label: 'Staff', value: 'staff' },
-  { label: 'Admin', value: 'admin' },
-];
-
 const SigninPage: React.FC = () => {
   const {
     control,
@@ -26,7 +20,6 @@ const SigninPage: React.FC = () => {
     },
     mode: 'onTouched',
   });
-  const [userType, setUserType] = useState('resident');
   const router = useRouter();
 
   useEffect(() => {
@@ -104,20 +97,6 @@ const SigninPage: React.FC = () => {
             <Pressable onPress={() => router.push('/auth/forgot-password')}>
               <Text className="text-base font-medium text-blue-600">Forgot password?</Text>
             </Pressable>
-          </View>
-          <View className="mb-5 w-full flex-row items-center justify-center">
-            {userTypes.map((type) => (
-              <Pressable
-                key={type.value}
-                onPress={() => setUserType(type.value)}
-                className="mx-2 flex-row items-center">
-                <View
-                  className={`h-5 w-5 rounded border ${userType === type.value ? 'border-green-600 bg-green-600' : 'border-gray-300 bg-white'} mr-1.5 items-center justify-center`}>
-                  {userType === type.value && <View className="h-3 w-3 rounded bg-white" />}
-                </View>
-                <Text className="text-base text-gray-800">{type.label}</Text>
-              </Pressable>
-            ))}
           </View>
           <Pressable
             className="items-center self-stretch rounded-lg bg-[#333] py-3"
