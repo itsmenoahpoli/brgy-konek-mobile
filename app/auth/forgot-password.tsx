@@ -1,9 +1,9 @@
 import { View, Text, TextInput, Image, Pressable } from 'react-native';
 import { useState, useEffect } from 'react';
 import { BRAND_LOGO } from '@/assets/images';
-import { SplashLayout } from '@/components';
 import { useRouter } from 'expo-router';
 import { useForm, Controller } from 'react-hook-form';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import authService from '../../services/auth.service';
 
 const ForgotPasswordPage: React.FC = () => {
@@ -67,14 +67,14 @@ const ForgotPasswordPage: React.FC = () => {
   };
 
   return (
-    <SplashLayout>
-      <View className="w-full flex-1 items-center justify-center bg-transparent">
+    <SafeAreaView className="flex-1 bg-white" edges={['top', 'bottom']}>
+      <View className="flex-1 items-center justify-center px-4">
         <Image source={BRAND_LOGO} className="mb-6 h-48 w-48" style={{ resizeMode: 'contain' }} />
         <View className="mb-6 flex flex-row justify-center gap-x-2">
           <Text className="text-4xl font-bold text-blue-800">BRGY</Text>
           <Text className="text-4xl font-bold text-red-600">KONEK</Text>
         </View>
-        <View className="w-[85%] items-center rounded-2xl bg-white p-6 shadow-lg">
+        <View className="w-full max-w-sm items-center rounded-2xl bg-white p-6">
           <Text className="mb-4 text-center text-xl font-bold text-gray-800">Forgot Password</Text>
 
           <Text className="mb-6 text-center text-sm leading-5 text-gray-600">
@@ -147,7 +147,7 @@ const ForgotPasswordPage: React.FC = () => {
           </Pressable>
         </View>
       </View>
-    </SplashLayout>
+    </SafeAreaView>
   );
 };
 

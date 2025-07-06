@@ -2,17 +2,14 @@ import {
   View,
   Text,
   TextInput,
-  Image,
   Pressable,
   Platform,
   KeyboardAvoidingView,
   ScrollView,
   ActivityIndicator,
-  Dimensions,
   useWindowDimensions,
   SafeAreaView,
 } from 'react-native';
-import { BRAND_LOGO } from '@/assets/images';
 import * as DocumentPicker from 'expo-document-picker';
 import type { DocumentPickerAsset } from 'expo-document-picker';
 import { useForm, Controller } from 'react-hook-form';
@@ -22,8 +19,7 @@ import { useRouter } from 'expo-router';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { useState } from 'react';
 import { Ionicons } from '@expo/vector-icons';
-
-const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 type FormData = {
   name: string;
@@ -36,16 +32,15 @@ type FormData = {
 };
 
 const CreateAccountPage: React.FC = () => {
-  const { width, height } = useWindowDimensions();
+  const { width } = useWindowDimensions();
+  const insets = useSafeAreaInsets();
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date | null>(new Date('1990-01-01'));
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const isSmallScreen = width < 375;
   const isMediumScreen = width >= 375 && width < 768;
   const isLargeScreen = width >= 768;
 
-  const logoSize = isLargeScreen ? 28 : isMediumScreen ? 24 : 20;
   const brandTextSize = isLargeScreen ? 'text-5xl' : isMediumScreen ? 'text-4xl' : 'text-3xl';
   const titleSize = isLargeScreen ? 'text-3xl' : isMediumScreen ? 'text-2xl' : 'text-xl';
   const inputPadding = isLargeScreen ? 'p-4' : isMediumScreen ? 'p-3' : 'p-2.5';
@@ -125,14 +120,6 @@ const CreateAccountPage: React.FC = () => {
     });
   };
 
-  const formatFileSize = (bytes: number) => {
-    if (bytes === 0) return '0 Bytes';
-    const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-  };
-
   const getFileIcon = (fileName: string) => {
     const extension = fileName.split('.').pop()?.toLowerCase();
     if (extension === 'pdf') return 'document-text';
@@ -146,7 +133,7 @@ const CreateAccountPage: React.FC = () => {
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         className="flex-1"
         keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}>
-        <View className="flex-1">
+        <View className="flex-1" style={{ paddingTop: insets.top, paddingBottom: insets.bottom }}>
           <View className="flex-row items-center justify-between px-6 py-6">
             <Pressable onPress={() => router.back()} className="rounded-full bg-gray-100 p-2">
               <Ionicons name="arrow-back" size={24} color="#374151" />
