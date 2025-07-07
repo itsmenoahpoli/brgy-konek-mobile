@@ -241,6 +241,93 @@ const authService = {
       throw formattedError;
     }
   },
+  updateProfile: async (data: {
+    name: string;
+    mobile_number: string;
+    address: string;
+    birthdate: string;
+  }) => {
+    try {
+      console.log('Original data:', data);
+
+      const token = await authStorage.getAuthToken();
+
+      if (!token) {
+        throw new Error('No authentication token found');
+      }
+
+      const formattedData = {
+        name: data.name.trim(),
+        mobile_number: data.mobile_number.trim(),
+        address: data.address.trim(),
+        birthdate: data.birthdate,
+      };
+
+      if (
+        !formattedData.name ||
+        !formattedData.mobile_number ||
+        !formattedData.address ||
+        !formattedData.birthdate
+      ) {
+        throw new Error('All fields are required');
+      }
+
+      console.log('Formatted data:', formattedData);
+
+      const res = await api.put('/auth/update-profile', formattedData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+      console.log('Response:', res.data);
+
+      Toast.show({
+        type: 'success',
+        text1: 'Profile Updated',
+        text2: 'Your profile has been updated successfully.',
+      });
+
+      return res.data;
+    } catch (err: any) {
+      console.log('Update profile error:', err);
+      console.log('Error response:', err?.response?.data);
+
+      let errorMessage = 'Profile update failed. Please try again.';
+
+      if (err?.response?.data?.message) {
+        errorMessage = err.response.data.message;
+      } else if (err?.response?.data?.errors) {
+        const validationErrors = Object.values(err.response.data.errors).flat();
+        errorMessage = validationErrors.join(', ');
+      } else if (err?.response?.status === 400) {
+        errorMessage = 'Invalid request. Please check your input.';
+      } else if (err?.response?.status === 401) {
+        errorMessage = 'Authentication failed. Please login again.';
+      } else if (err?.response?.status === 422) {
+        errorMessage = 'Please check your input data and try again.';
+      } else if (err?.response?.status === 409) {
+        errorMessage = 'Email already exists. Please use a different email.';
+      } else if (err?.response?.status === 500) {
+        errorMessage = 'Server error. Please try again later.';
+      } else if (err?.code === 'NETWORK_ERROR' || err?.code === 'ECONNABORTED') {
+        errorMessage = 'Network error. Please check your connection.';
+      }
+
+      Toast.show({
+        type: 'error',
+        text1: 'Update Failed',
+        text2: errorMessage,
+      });
+
+      const formattedError = {
+        message: errorMessage,
+        originalError: err,
+      };
+
+      throw formattedError;
+    }
+  },
 };
 
 export default authService;

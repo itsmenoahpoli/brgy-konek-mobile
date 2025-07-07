@@ -7,9 +7,9 @@ import {
   ScrollView,
   KeyboardAvoidingView,
   Platform,
+  ActivityIndicator,
 } from 'react-native';
 import { DashboardLayout } from '@/components/layouts/DashboardLayout';
-import * as DocumentPicker from 'expo-document-picker';
 import type { DocumentPickerAsset } from 'expo-document-picker';
 import { useForm, Controller } from 'react-hook-form';
 import { useRouter } from 'expo-router';
@@ -17,8 +17,9 @@ import { useEffect, useState } from 'react';
 import { authStorage } from '../../utils/storage';
 import { Ionicons } from '@expo/vector-icons';
 import dayjs from 'dayjs';
+import authService from '../../services/auth.service';
 
-const countryCode = '+63';
+const countryCode = '+639';
 const countryFlag = require('@/assets/images/brand-logo.png');
 
 type FormData = {
@@ -34,12 +35,11 @@ type FormData = {
 
 const MyProfile: React.FC = () => {
   const [profileImage, setProfileImage] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
   const {
     control,
     handleSubmit,
     formState: { errors },
-    setValue,
-    trigger,
     reset,
   } = useForm<FormData>({
     defaultValues: {
@@ -59,6 +59,19 @@ const MyProfile: React.FC = () => {
   useEffect(() => {
     authStorage.getUserData().then((user) => {
       if (user) {
+        console.log('Original user data:', user);
+        console.log('Original phone:', user.phone);
+        console.log('Original mobile_number:', user.mobile_number);
+
+        let phoneNumber = user.mobile_number || user.phone || '';
+
+        if (phoneNumber.startsWith(countryCode)) {
+          phoneNumber = phoneNumber.substring(countryCode.length);
+        }
+
+        console.log('Processed phone number:', phoneNumber);
+        console.log('Country code:', countryCode);
+
         reset({
           name: user.name || '',
           birthdate: user.birthdate || '',
@@ -67,27 +80,61 @@ const MyProfile: React.FC = () => {
           password: '',
           confirmPassword: '',
           clearance: null,
-          phone: user.phone || '',
+          phone: phoneNumber,
         });
         if (user.profileImage) setProfileImage(user.profileImage);
       }
     });
   }, []);
 
-  const onSubmit = (data: any) => {
-    // TODO: Implement profile update logic
-  };
+  const onSubmit = async (data: FormData) => {
+    try {
+      setIsLoading(true);
+      console.log('Form data:', data);
 
-  const pickClearance = async (onChange: (file: DocumentPickerAsset | null) => void) => {
-    const result = await DocumentPicker.getDocumentAsync({
-      type: ['application/pdf', 'image/*'],
-      copyToCacheDirectory: true,
-      multiple: false,
-    });
-    if (result.assets && result.assets.length > 0) {
-      onChange(result.assets[0]);
-      setValue('clearance', result.assets[0], { shouldValidate: true });
-      trigger('clearance');
+      console.log('Form data phone:', data.phone);
+      console.log('Form data phone trimmed:', data.phone.trim());
+
+      const updateData = {
+        name: data.name.trim(),
+        mobile_number: countryCode + data.phone.trim(),
+        address: data.address.trim(),
+        birthdate: data.birthdate,
+      };
+
+      console.log('Update data:', updateData);
+
+      const response = await authService.updateProfile(updateData);
+
+      if (response) {
+        const currentUser = await authStorage.getUserData();
+        const authToken = await authStorage.getAuthToken();
+
+        console.log('Current user data:', currentUser);
+        console.log('Auth token:', authToken);
+
+        if (currentUser && authToken) {
+          const updatedUser = {
+            id: currentUser.id,
+            name: updateData.name,
+            email: currentUser.email,
+            mobile_number: updateData.mobile_number,
+            phone: updateData.mobile_number,
+            address: updateData.address,
+            birthdate: updateData.birthdate,
+            profileImage: currentUser.profileImage || null,
+          };
+
+          console.log('Updated user data:', updatedUser);
+          await authStorage.saveAuthData(authToken, updatedUser);
+        } else {
+          console.error('Missing user data or auth token');
+        }
+      }
+    } catch (error: any) {
+      console.log('Profile update error:', error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -233,7 +280,7 @@ const MyProfile: React.FC = () => {
                 </Text>
               </View>
               <View className="mb-2 self-stretch">
-                <Text className="mb-1 text-base font-medium text-gray-700">Rumahku</Text>
+                <Text className="mb-1 text-base font-medium text-gray-700">Address</Text>
                 <Controller
                   control={control}
                   name="address"
@@ -251,10 +298,20 @@ const MyProfile: React.FC = () => {
                 />
               </View>
               <Pressable
-                className="mb-2 mt-8 w-full items-center rounded-full bg-gradient-to-r from-orange-400 to-orange-600 py-4"
-                style={{ backgroundColor: '#FF7A00' }}
-                onPress={handleSubmit(onSubmit)}>
-                <Text className="text-base font-bold text-white">Save Changes</Text>
+                className={`mb-2 mt-8 w-full items-center rounded-full py-4 ${
+                  isLoading ? 'bg-gray-400' : 'bg-gradient-to-r from-orange-400 to-orange-600'
+                }`}
+                style={{ backgroundColor: isLoading ? '#9ca3af' : '#FF7A00' }}
+                onPress={handleSubmit(onSubmit)}
+                disabled={isLoading}>
+                {isLoading ? (
+                  <View className="flex-row items-center">
+                    <ActivityIndicator size="small" color="#ffffff" />
+                    <Text className="ml-2 text-base font-bold text-white">Saving...</Text>
+                  </View>
+                ) : (
+                  <Text className="text-base font-bold text-white">Save Changes</Text>
+                )}
               </Pressable>
             </View>
           </View>
