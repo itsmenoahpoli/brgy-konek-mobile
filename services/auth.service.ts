@@ -80,9 +80,9 @@ const authService = {
       throw err;
     }
   },
-  forgotPassword: async (email: string) => {
+  forgotPassword: async (email: string, router?: any) => {
     try {
-      const res = await api.post('/auth/forgot-password', { email });
+      const res = await api.post('/auth/request-otp', { email });
       console.log(res);
 
       Toast.show({
@@ -90,6 +90,13 @@ const authService = {
         text1: 'Reset Email Sent',
         text2: 'Please check your email for password reset instructions.',
       });
+
+      if (router) {
+        router.push({
+          pathname: '/auth/verify-otp',
+          params: { email },
+        });
+      }
 
       return res.data;
     } catch (err: any) {
@@ -117,9 +124,9 @@ const authService = {
       throw err;
     }
   },
-  verifyOTP: async (otp: string) => {
+  verifyOTP: async (email: string, otp: string) => {
     try {
-      const res = await api.post('/auth/verify-otp', { otp });
+      const res = await api.post('/auth/verify-otp', { email, otp_code: otp });
       console.log(res);
 
       Toast.show({
@@ -187,6 +194,51 @@ const authService = {
       });
 
       throw err;
+    }
+  },
+  resetPassword: async (email: string, password: string) => {
+    try {
+      const res = await api.post('/auth/reset-password', { email, new_password: password });
+      console.log(res);
+
+      Toast.show({
+        type: 'success',
+        text1: 'Password Reset Successful',
+        text2: 'Your password has been updated successfully.',
+      });
+
+      return res.data;
+    } catch (err: any) {
+      console.log(err);
+      let errorMessage = 'Password reset failed. Please try again.';
+
+      if (err?.response?.data?.message) {
+        errorMessage = err.response.data.message;
+      } else if (err?.response?.data?.errors) {
+        const validationErrors = Object.values(err.response.data.errors).flat();
+        errorMessage = validationErrors.join(', ');
+      } else if (err?.response?.status === 400) {
+        errorMessage = 'Invalid request. Please check your input.';
+      } else if (err?.response?.status === 422) {
+        errorMessage = 'Please check your input data and try again.';
+      } else if (err?.response?.status === 500) {
+        errorMessage = 'Server error. Please try again later.';
+      } else if (err?.code === 'NETWORK_ERROR' || err?.code === 'ECONNABORTED') {
+        errorMessage = 'Network error. Please check your connection.';
+      }
+
+      Toast.show({
+        type: 'error',
+        text1: 'Reset Failed',
+        text2: errorMessage,
+      });
+
+      const formattedError = {
+        message: errorMessage,
+        originalError: err,
+      };
+
+      throw formattedError;
     }
   },
 };

@@ -1,5 +1,5 @@
 import { View, Text, TextInput, Image, Pressable } from 'react-native';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { BRAND_LOGO } from '@/assets/images';
 import { useRouter } from 'expo-router';
 import { useForm, Controller } from 'react-hook-form';
@@ -19,51 +19,18 @@ const ForgotPasswordPage: React.FC = () => {
     mode: 'onTouched',
   });
 
-  const [isSubmitted, setIsSubmitted] = useState(false);
-  const [countdown, setCountdown] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
-
-  useEffect(() => {
-    let timer: NodeJS.Timeout;
-    if (countdown > 0) {
-      timer = setTimeout(() => setCountdown(countdown - 1), 1000);
-    }
-    return () => clearTimeout(timer);
-  }, [countdown]);
 
   const onSubmit = async (data: any) => {
     setIsLoading(true);
     try {
-      await authService.forgotPassword(data.email);
-      setIsSubmitted(true);
-      setCountdown(60);
+      await authService.forgotPassword(data.email, router);
     } catch (error) {
       console.log(error);
     } finally {
       setIsLoading(false);
     }
-  };
-
-  const handleResend = async () => {
-    const email = control._formValues.email;
-    if (!email) return;
-
-    setIsLoading(true);
-    try {
-      await authService.forgotPassword(email);
-      setCountdown(60);
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const formatTime = (seconds: number) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
   return (
@@ -118,27 +85,9 @@ const ForgotPasswordPage: React.FC = () => {
             onPress={handleSubmit(onSubmit)}
             disabled={isLoading}>
             <Text className="text-base font-bold text-white">
-              {isLoading ? 'Sending...' : 'Send Reset Link'}
+              {isLoading ? 'Sending...' : 'Send One-Time-Passcode'}
             </Text>
           </Pressable>
-
-          {isSubmitted && (
-            <View className="mt-2 w-full items-center">
-              <Text className="mb-3 text-center text-sm text-green-600">
-                Reset link sent! Check your email for instructions.
-              </Text>
-
-              <Pressable
-                className={`items-center self-stretch rounded-lg border py-3 ${countdown > 0 || isLoading ? 'border-gray-300 bg-gray-100' : 'border-blue-500 bg-white'}`}
-                onPress={handleResend}
-                disabled={countdown > 0 || isLoading}>
-                <Text
-                  className={`text-base font-bold ${countdown > 0 || isLoading ? 'text-gray-400' : 'text-blue-600'}`}>
-                  {countdown > 0 ? `Resend in ${formatTime(countdown)}` : 'Resend Email'}
-                </Text>
-              </Pressable>
-            </View>
-          )}
 
           <Pressable
             className="mt-4 items-center self-stretch rounded-lg border border-gray-300 bg-white py-3"

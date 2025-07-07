@@ -1,7 +1,7 @@
 import { View, Text, TextInput, Image, Pressable } from 'react-native';
 import { useState, useEffect } from 'react';
 import { BRAND_LOGO } from '@/assets/images';
-import { useRouter } from 'expo-router';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useForm, Controller } from 'react-hook-form';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import authService from '../../services/auth.service';
@@ -23,6 +23,7 @@ const VerifyOTPPage: React.FC = () => {
   const [countdown, setCountdown] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+  const { email } = useLocalSearchParams<{ email: string }>();
 
   useEffect(() => {
     let timer: NodeJS.Timeout;
@@ -35,8 +36,11 @@ const VerifyOTPPage: React.FC = () => {
   const onSubmit = async (data: any) => {
     setIsLoading(true);
     try {
-      await authService.verifyOTP(data.otp);
-      router.push('/user/my-pofile');
+      await authService.verifyOTP(email, data.otp);
+      router.push({
+        pathname: '/auth/reset-password',
+        params: { email },
+      });
     } catch (error) {
       console.log(error);
     } finally {
