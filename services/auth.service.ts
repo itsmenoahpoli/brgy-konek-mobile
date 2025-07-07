@@ -117,6 +117,78 @@ const authService = {
       throw err;
     }
   },
+  verifyOTP: async (otp: string) => {
+    try {
+      const res = await api.post('/auth/verify-otp', { otp });
+      console.log(res);
+
+      Toast.show({
+        type: 'success',
+        text1: 'OTP Verified',
+        text2: 'Your account has been verified successfully.',
+      });
+
+      return res.data;
+    } catch (err: any) {
+      console.log(err);
+      let errorMessage = 'OTP verification failed. Please try again.';
+
+      if (err?.response?.data?.message) {
+        errorMessage = err.response.data.message;
+      } else if (err?.response?.status === 400) {
+        errorMessage = 'Invalid OTP. Please check and try again.';
+      } else if (err?.response?.status === 422) {
+        errorMessage = 'Please enter a valid 6-digit OTP.';
+      } else if (err?.response?.status === 500) {
+        errorMessage = 'Server error. Please try again later.';
+      } else if (err?.code === 'NETWORK_ERROR' || err?.code === 'ECONNABORTED') {
+        errorMessage = 'Network error. Please check your connection.';
+      }
+
+      Toast.show({
+        type: 'error',
+        text1: 'Verification Failed',
+        text2: errorMessage,
+      });
+
+      throw err;
+    }
+  },
+  resendOTP: async () => {
+    try {
+      const res = await api.post('/auth/resend-otp');
+      console.log(res);
+
+      Toast.show({
+        type: 'success',
+        text1: 'OTP Resent',
+        text2: 'A new verification code has been sent to your email.',
+      });
+
+      return res.data;
+    } catch (err: any) {
+      console.log(err);
+      let errorMessage = 'Failed to resend OTP. Please try again.';
+
+      if (err?.response?.data?.message) {
+        errorMessage = err.response.data.message;
+      } else if (err?.response?.status === 429) {
+        errorMessage = 'Too many requests. Please wait before trying again.';
+      } else if (err?.response?.status === 500) {
+        errorMessage = 'Server error. Please try again later.';
+      } else if (err?.code === 'NETWORK_ERROR' || err?.code === 'ECONNABORTED') {
+        errorMessage = 'Network error. Please check your connection.';
+      }
+
+      Toast.show({
+        type: 'error',
+        text1: 'Resend Failed',
+        text2: errorMessage,
+      });
+
+      throw err;
+    }
+  },
 };
 
 export default authService;
