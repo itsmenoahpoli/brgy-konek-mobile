@@ -58,7 +58,7 @@ export const DashboardLayout: React.FC<Props> = ({ children, title = 'Dashboard'
         });
       }
     } else if (route === 'home') {
-      router.push('/' as any);
+      router.push('/user' as any);
     } else if (route === 'profile') {
       router.push('/user/my-pofile' as any);
     }

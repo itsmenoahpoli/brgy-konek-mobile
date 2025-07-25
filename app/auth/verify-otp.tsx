@@ -23,7 +23,7 @@ const VerifyOTPPage: React.FC = () => {
   const [countdown, setCountdown] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
-  const { email } = useLocalSearchParams<{ email: string }>();
+  const { email, from } = useLocalSearchParams<{ email: string; from?: string }>();
 
   useEffect(() => {
     let timer: NodeJS.Timeout;
@@ -37,10 +37,11 @@ const VerifyOTPPage: React.FC = () => {
     setIsLoading(true);
     try {
       await authService.verifyOTP(email, data.otp);
-      router.push({
-        pathname: '/auth/reset-password',
-        params: { email },
-      });
+      if (from === 'forgot-password') {
+        router.push({ pathname: '/auth/reset-password', params: { email } });
+      } else {
+        router.push('/user');
+      }
     } catch (error) {
       console.log(error);
     } finally {

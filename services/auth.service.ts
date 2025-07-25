@@ -12,8 +12,8 @@ const authService = {
         await authStorage.saveAuthData(res.data.token, res.data.user || res.data);
         Toast.show({
           type: 'success',
-          text1: 'Login Successful',
-          text2: 'Welcome back!',
+          text1: 'Redirecting ....',
+          text2: '2FA Verification Required',
         });
       }
 
@@ -94,7 +94,7 @@ const authService = {
       if (router) {
         router.push({
           pathname: '/auth/verify-otp',
-          params: { email },
+          params: { email, from: 'forgot-password' },
         });
       }
 
