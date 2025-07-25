@@ -97,6 +97,20 @@ export const DashboardLayout: React.FC<Props> = ({ children, title = 'Dashboard'
               <Text className="ml-3 text-base font-medium text-gray-800">My Account</Text>
             </Pressable>
 
+            <Pressable
+              onPress={() => router.push('/user/complaints')}
+              className="mb-2 flex-row items-center rounded-lg px-2 py-3">
+              <Ionicons name="alert-circle" size={20} color="#1f2937" />
+              <Text className="ml-3 text-base font-medium text-gray-800">Complaints</Text>
+            </Pressable>
+
+            <Pressable
+              onPress={() => router.push('/user/announcements')}
+              className="mb-2 flex-row items-center rounded-lg px-2 py-3">
+              <Ionicons name="megaphone" size={20} color="#1f2937" />
+              <Text className="ml-3 text-base font-medium text-gray-800">Announcements</Text>
+            </Pressable>
+
             <View className="flex-1" />
 
             <Pressable
