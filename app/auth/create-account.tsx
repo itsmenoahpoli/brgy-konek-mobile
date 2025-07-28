@@ -20,11 +20,19 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import { useState } from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Dropdown } from '../../components';
+import regionData from '../../data/region.json';
+import provinceData from '../../data/province.json';
+import cityData from '../../data/city.json';
 
 type FormData = {
   name: string;
   birthdate: string;
-  address: string;
+  address_sitio: string;
+  address_barangay: string;
+  address_municipality: string;
+  address_province: string;
+  address_region: string;
   email: string;
   password: string;
   confirmPassword: string;
@@ -37,6 +45,9 @@ const CreateAccountPage: React.FC = () => {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date | null>(new Date('1990-01-01'));
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [selectedRegion, setSelectedRegion] = useState('');
+  const [selectedProvince, setSelectedProvince] = useState('');
+  const [selectedCity, setSelectedCity] = useState('');
 
   const isMediumScreen = width >= 375 && width < 768;
   const isLargeScreen = width >= 768;
@@ -62,6 +73,46 @@ const CreateAccountPage: React.FC = () => {
 
   const closeDatePicker = () => {
     setShowDatePicker(false);
+  };
+
+  const regionOptions = regionData.map((region) => ({
+    label: region.region_name,
+    value: region.region_code,
+  }));
+
+  const provinceOptions = provinceData
+    .filter((province) => !selectedRegion || province.region_code === selectedRegion)
+    .map((province) => ({
+      label: province.province_name,
+      value: province.province_code,
+    }));
+
+  const cityOptions = cityData
+    .filter((city) => !selectedProvince || city.province_code === selectedProvince)
+    .map((city) => ({
+      label: city.city_name,
+      value: city.city_code,
+    }));
+
+  const handleRegionChange = (regionCode: string) => {
+    setSelectedRegion(regionCode);
+    setSelectedProvince('');
+    setSelectedCity('');
+    setValue('address_region', regionCode);
+    setValue('address_province', '');
+    setValue('address_municipality', '');
+  };
+
+  const handleProvinceChange = (provinceCode: string) => {
+    setSelectedProvince(provinceCode);
+    setSelectedCity('');
+    setValue('address_province', provinceCode);
+    setValue('address_municipality', '');
+  };
+
+  const handleCityChange = (cityCode: string) => {
+    setSelectedCity(cityCode);
+    setValue('address_municipality', cityCode);
   };
 
   const onSubmit = (data: any) => {
@@ -212,8 +263,8 @@ const CreateAccountPage: React.FC = () => {
             />
             <Controller
               control={control}
-              name="address"
-              rules={{ required: 'Address is required' }}
+              name="address_sitio"
+              rules={{ required: 'Sitio/Street is required' }}
               render={({ field: { onChange, onBlur, value } }) => (
                 <>
                   <TextInput
@@ -221,16 +272,97 @@ const CreateAccountPage: React.FC = () => {
                     onChangeText={onChange}
                     onBlur={onBlur}
                     onFocus={closeDatePicker}
-                    placeholder="Address"
+                    placeholder="Sitio/Street"
                     editable={!isSubmitting}
-                    className={`mb-1 rounded-lg border ${errors.address ? 'border-red-500' : 'border-gray-200'} ${isSubmitting ? 'bg-gray-100' : 'bg-gray-50'} ${inputPadding} ${inputTextSize}`}
+                    className={`mb-1 rounded-lg border ${errors.address_sitio ? 'border-red-500' : 'border-gray-200'} ${isSubmitting ? 'bg-gray-100' : 'bg-gray-50'} ${inputPadding} ${inputTextSize}`}
                     placeholderTextColor="#9ca3af"
                   />
-                  {errors.address && (
+                  {errors.address_sitio && (
                     <Text className="mb-4 text-xs text-red-600">
-                      {errors.address.message as string}
+                      {errors.address_sitio.message as string}
                     </Text>
                   )}
+                </>
+              )}
+            />
+            <Controller
+              control={control}
+              name="address_barangay"
+              rules={{ required: 'Barangay is required' }}
+              render={({ field: { onChange, onBlur, value } }) => (
+                <>
+                  <TextInput
+                    value={value}
+                    onChangeText={onChange}
+                    onBlur={onBlur}
+                    onFocus={closeDatePicker}
+                    placeholder="Barangay"
+                    editable={!isSubmitting}
+                    className={`mb-1 rounded-lg border ${errors.address_barangay ? 'border-red-500' : 'border-gray-200'} ${isSubmitting ? 'bg-gray-100' : 'bg-gray-50'} ${inputPadding} ${inputTextSize}`}
+                    placeholderTextColor="#9ca3af"
+                  />
+                  {errors.address_barangay && (
+                    <Text className="mb-4 text-xs text-red-600">
+                      {errors.address_barangay.message as string}
+                    </Text>
+                  )}
+                </>
+              )}
+            />
+            <Controller
+              control={control}
+              name="address_region"
+              rules={{ required: 'Region is required' }}
+              render={({ field: { value } }) => (
+                <>
+                  <View className="mb-4">
+                    <Dropdown
+                      placeholder="Select Region"
+                      options={regionOptions}
+                      value={selectedRegion}
+                      onValueChange={handleRegionChange}
+                      error={errors.address_region?.message}
+                      disabled={isSubmitting}
+                    />
+                  </View>
+                </>
+              )}
+            />
+            <Controller
+              control={control}
+              name="address_province"
+              rules={{ required: 'Province is required' }}
+              render={({ field: { value } }) => (
+                <>
+                  <View className="mb-4">
+                    <Dropdown
+                      placeholder="Select Province"
+                      options={provinceOptions}
+                      value={selectedProvince}
+                      onValueChange={handleProvinceChange}
+                      error={errors.address_province?.message}
+                      disabled={isSubmitting}
+                    />
+                  </View>
+                </>
+              )}
+            />
+            <Controller
+              control={control}
+              name="address_municipality"
+              rules={{ required: 'City/Municipality is required' }}
+              render={({ field: { value } }) => (
+                <>
+                  <View className="mb-4">
+                    <Dropdown
+                      placeholder="Select City/Municipality"
+                      options={cityOptions}
+                      value={selectedCity}
+                      onValueChange={handleCityChange}
+                      error={errors.address_municipality?.message}
+                      disabled={isSubmitting}
+                    />
+                  </View>
                 </>
               )}
             />

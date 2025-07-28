@@ -5,6 +5,7 @@ import { SplashLayout } from '@/components';
 import { useRouter } from 'expo-router';
 import { useForm, Controller } from 'react-hook-form';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Ionicons } from '@expo/vector-icons';
 import authService from '../../services/auth.service';
 import { authStorage } from '../../utils/storage';
 
@@ -29,6 +30,7 @@ const SigninPage: React.FC = () => {
   const [modalError, setModalError] = useState('');
   const [modalLoading, setModalLoading] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   useEffect(() => {
     const checkUserData = async () => {
@@ -48,14 +50,20 @@ const SigninPage: React.FC = () => {
       setFailedAttempts(0);
       router.push(`/auth/verify-otp?email=${encodeURIComponent(data.email)}&from=login`);
       setLoading(false);
-    } catch (e) {
-      setFailedAttempts((prev) => prev + 1);
-      if (failedAttempts + 1 >= 3) {
-        setShowModal(true);
-        setModalStep('email');
-        setModalEmail('');
-        setModalOTP('');
-        setModalError('');
+    } catch (e: any) {
+      const isNetworkError = e?.code === 'NETWORK_ERROR' || e?.code === 'ECONNABORTED';
+      const isUnauthorized = e?.response?.status === 400;
+
+      if (isUnauthorized) {
+        setFailedAttempts((prev) => prev + 1);
+
+        if (failedAttempts + 1 >= 3) {
+          setShowModal(true);
+          setModalStep('email');
+          setModalEmail('');
+          setModalOTP('');
+          setModalError('');
+        }
       }
       setLoading(false);
     }
@@ -131,15 +139,22 @@ const SigninPage: React.FC = () => {
             rules={{ required: 'Password is required' }}
             render={({ field: { onChange, value, onBlur } }) => (
               <>
-                <TextInput
-                  value={value}
-                  onChangeText={onChange}
-                  onBlur={onBlur}
-                  placeholder="Password"
-                  secureTextEntry
-                  className={`mb-1 self-stretch rounded-lg border ${errors.password ? 'border-red-500' : 'border-gray-200'} bg-gray-50 p-3 text-base`}
-                  placeholderTextColor="#9ca3af"
-                />
+                <View className="relative w-full">
+                  <TextInput
+                    value={value}
+                    onChangeText={onChange}
+                    onBlur={onBlur}
+                    placeholder="Password"
+                    secureTextEntry={!showPassword}
+                    className={`mb-1 w-full rounded-lg border ${errors.password ? 'border-red-500' : 'border-gray-200'} bg-gray-50 p-3 pr-12 text-base`}
+                    placeholderTextColor="#9ca3af"
+                  />
+                  <Pressable
+                    className="absolute right-3 top-3"
+                    onPress={() => setShowPassword(!showPassword)}>
+                    <Ionicons name={showPassword ? 'eye-off' : 'eye'} size={20} color="#6b7280" />
+                  </Pressable>
+                </View>
                 {errors.password && (
                   <Text className="mb-3 self-stretch text-xs text-red-600">
                     {errors.password.message as string}

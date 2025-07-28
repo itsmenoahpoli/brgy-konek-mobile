@@ -24,7 +24,7 @@ const authService = {
 
       if (err?.response?.data?.message) {
         errorMessage = err.response.data.message;
-      } else if (err?.response?.status === 401) {
+      } else if (err?.response?.status === 400) {
         errorMessage = 'Invalid email or password.';
       } else if (err?.response?.status === 422) {
         errorMessage = 'Please check your input data and try again.';

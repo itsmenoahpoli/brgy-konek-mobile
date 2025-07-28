@@ -97,6 +97,34 @@ npm run format
 - `hooks/` - Custom React hooks
 - `utils/` - Utility functions
 - `assets/` - Images and static assets
+- `data/` - Philippine address data (regions, provinces, cities)
+
+## Address Fields
+
+The application includes comprehensive address fields for Philippine locations:
+
+### Address Structure
+
+- **Sitio/Street** - Text input for specific street or sitio
+- **Barangay** - Text input for barangay name
+- **Region** - Dropdown with all Philippine regions
+- **Province** - Dropdown filtered by selected region
+- **City/Municipality** - Dropdown filtered by selected province
+
+### Data Source
+
+Address data is sourced from the [Philippine Addresses](https://github.com/isaacdarcilla/philippine-addresses) repository and includes:
+
+- 17 regions
+- 87 provinces
+- 1,634 cities/municipalities
+
+### Features
+
+- Cascading dropdowns (province depends on region, city depends on province)
+- Form validation for all address fields
+- Responsive design for different screen sizes
+- TypeScript support with proper type definitions
 
 ## Additional Notes
 

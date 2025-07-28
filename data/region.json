@@ -1,0 +1,87 @@
+[
+  {
+    "region_code": "01",
+    "region_name": "Ilocos Region",
+    "psgc_code": "010000000"
+  },
+  {
+    "region_code": "02",
+    "region_name": "Cagayan Valley",
+    "psgc_code": "020000000"
+  },
+  {
+    "region_code": "03",
+    "region_name": "Central Luzon",
+    "psgc_code": "030000000"
+  },
+  {
+    "region_code": "04",
+    "region_name": "Calabarzon",
+    "psgc_code": "040000000"
+  },
+  {
+    "region_code": "05",
+    "region_name": "Bicol Region",
+    "psgc_code": "050000000"
+  },
+  {
+    "region_code": "06",
+    "region_name": "Western Visayas",
+    "psgc_code": "060000000"
+  },
+  {
+    "region_code": "07",
+    "region_name": "Central Visayas",
+    "psgc_code": "070000000"
+  },
+  {
+    "region_code": "08",
+    "region_name": "Eastern Visayas",
+    "psgc_code": "080000000"
+  },
+  {
+    "region_code": "09",
+    "region_name": "Zamboanga Peninsula",
+    "psgc_code": "090000000"
+  },
+  {
+    "region_code": "10",
+    "region_name": "Northern Mindanao",
+    "psgc_code": "100000000"
+  },
+  {
+    "region_code": "11",
+    "region_name": "Davao Region",
+    "psgc_code": "110000000"
+  },
+  {
+    "region_code": "12",
+    "region_name": "Soccsksargen",
+    "psgc_code": "120000000"
+  },
+  {
+    "region_code": "13",
+    "region_name": "Caraga",
+    "psgc_code": "130000000"
+  },
+  {
+    "region_code": "14",
+    "region_name": "Cordillera Administrative Region",
+    "psgc_code": "140000000"
+  },
+  {
+    "region_code": "15",
+    "region_name": "National Capital Region",
+    "psgc_code": "150000000"
+  },
+  {
+    "region_code": "16",
+    "region_name": "Mimaropa",
+    "psgc_code": "160000000"
+  },
+  {
+    "region_code": "17",
+    "region_name": "Bangsamoro Autonomous Region in Muslim Mindanao",
+    "psgc_code": "170000000"
+  }
+]

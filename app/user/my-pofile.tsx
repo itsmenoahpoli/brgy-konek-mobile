@@ -159,7 +159,7 @@ const MyProfile: React.FC = () => {
             paddingBottom: 32,
           }}
           keyboardShouldPersistTaps="handled">
-          <View className="w-full flex-1 items-center bg-transparent pt-6">
+          <View className="w-full flex-1 items-center bg-transparent">
             <View className="mb-2 w-[85%] flex-row items-center">
               <Pressable onPress={() => router.push('/')}>
                 <Text className="text-blue-600">Home</Text>
